@@ -178,7 +178,3 @@ data_map.txt
 .gptcache_data_map.txt
 dump.rdb
 faiss.index
-
-.vscode/settings.json
-factcheck/config/secret_dict.py
-factcheck/config/secret_dict.py
