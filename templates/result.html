@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Results</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      /* display: flex; */
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: baseline;
+      height: 100vh;
+      /* background: #f4f4f4; */
+      background: #e5e5e5;
+    }
+
+    header {
+      width: 100%;
+      height: 50px;
+      background-color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      /* position: fixed; */
+    }
+
+    header img {
+      margin-left: 50px;
+    }
+
+    .overview {
+      margin-left: 50px;
+    }
+
+    .claim {
+      margin-left: 50px;
+      width: 95%;
+      background-color: #efd3aa;
+      padding: 10px;
+      margin: 8px;
+      margin-left: 35px;
+      border-radius: 15px;
+    }
+    .evidence {
+      margin-left: 50px;
+      width: 95%;
+      background-color: #e3dcd2;
+      padding: 10px;
+      margin: 8px;
+      margin-left: 35px;
+      border-radius: 15px;
+    }
+    .pre-wrap {
+        white-space: pre-wrap;
+    }
+    .button {
+            margin-left: 50px;
+            width: 50%;
+            padding: 10px 20px;
+            background-color: #6c604d;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        footer {
+            padding: 10px;
+            width: 100%;
+            color: #fff;
+            background-color: #333;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+        }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="https://www.librai.tech">
+      <img alt="LibrAI Logo" src="https://aip.librai.tech/static/logo_with_text.9bc473c7.png" alt="LibrAI Logo"
+        width="200px">
+    </a>
+  </header>
+  <h1 class="overview">Results </h1>
+
+  <div class="overview">
+    <h2>Response: {{ responses.response }}</h2>
+    <h2>Factuality: {{ responses.factuality }}</h2>
+  </div>
+
+  {% for key, value in responses['step_info']["5_claim_verify"].items() %}
+  <div>
+    <div class=" claim">
+      <h2>{{ key }} </h2>
+      <p><strong>Factuality:</strong> {{ value.factuality }}</p>
+      <p><strong>Error:</strong> {{ value.error }}</p>
+      <p><strong>Correction:</strong> {{ value.correction }}</p>
+      <p><strong>Reasoning:</strong> {{ value.reasoning }}</p>
+      <p><strong>Evidences:</strong></p>
+      <ul>
+        {% for evidence in value.evidence %}
+          <div class=" evidence">
+            <p><strong>Evidence-{{ loop.index }}:</strong> <p class="evidence-text pre-wrap">{{evidence.text}}</p></p>
+          </div>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+
+  <button class="button" onclick="newCheck()">New Check</button>
+
+</body>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.evidence-text').forEach((element) => {
+      element.innerHTML = convertUrlsToLinks(element.innerHTML);
+    });
+  });
+  function convertUrlsToLinks(text) {
+    const urlPattern = /(\bhttps?:\/\/[^\s]+)/g;
+    return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+  }
+  function newCheck() {
+    window.location.href = "/";
+}
+</script>
+
+<footer>
+  <p>&copy; LibrAI. All rights reserved</p>
+</footer>
+
+</html>

@@ -1,0 +1,12 @@
+flask
+nltk
+openai
+anthropic
+tiktoken
+backoff
+bs4
+httpx
+playwright
+playwright_stealth
+pandas
+opencv-python
