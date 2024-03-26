@@ -131,6 +131,9 @@ Your support enables us to:
 
 </div>
 
+[TRY NOW!](https://aip.librai.tech/login)
+
+
 ## Stay Connected and Informed
 
 
