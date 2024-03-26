@@ -9,7 +9,7 @@
 # OpenFactVerification: An Open-source Tool for Fact Verification
 
 ## Overview
-OpenFactChecking is a simplified open-source version of our online fact-checking tool designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join our [slack channel](to_be_added)!
+OpenFactChecking is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join our [slack channel](to_be_added)!
 
 ## Components
 - **Decomposer:** Splits a long text into several independent claims for further processing.
