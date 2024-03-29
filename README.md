@@ -9,7 +9,7 @@
 # OpenFactVerification: An Open-source Tool for Fact Verification
 
 ## Overview
-OpenFactChecking is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join our [slack channel](to_be_added)!
+OpenFactChecking is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join our [slack channel (TBA)](to_be_added)!
 
 ## Components
 - **Decomposer:** Splits a long text into several independent claims for further processing.
@@ -122,7 +122,7 @@ Your support enables us to:
 | Diverse Evidence from the Open Web     | ✅                   | ✅                  |
 | Automated Correction of Misinformation | ✅                   | ✅                  |
 | Privacy and Data Security              | ✅                   | ✅                  |
-| Multimodal Input                       | ❌                   | ✅                  |
+| Multimodal Input                       | ✅                   | ✅                  |
 | One-Stop Custom Solution               | ❌                   | ✅                  |
 | Customizable Verification Data Sources | ❌                   | ✅                  |
 | Enhanced User Experience               | ❌                   | ✅                  |
@@ -157,7 +157,7 @@ add slack channel here
 ## Cite as
 ```
 @misc{openfactverification,
-  author = {LibrAI},
+  author = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Han, Xudong and Li, Haonan},
   title = {OpenFactVerification: An Open-source Tool for Fact Verification},
   year = {2024},
   publisher = {GitHub},
