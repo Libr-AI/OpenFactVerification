@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 factcheck_instance = FactCheck()
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -15,6 +16,7 @@ def index():
         return render_template('result.html', responses=response_list)
 
     return render_template('input.html')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=2024, debug=True)
