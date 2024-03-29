@@ -103,7 +103,7 @@
   {% for key, value in responses['step_info']["5_claim_verify"].items() %}
   <div>
     <div class=" claim">
-      <h2>{{ key }} </h2>
+      <h3>Claim: {{ key }} </h3>
       <p><strong>Factuality:</strong> {{ value.factuality }}</p>
       <p><strong>Error:</strong> {{ value.error }}</p>
       <p><strong>Correction:</strong> {{ value.correction }}</p>

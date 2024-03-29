@@ -18,7 +18,7 @@ logger = CustomLogger(__name__).getlog()
 class FactCheck:
     def __init__(
         self,
-        default_model: str = "gpt-3.5-turbo-1106",
+        default_model: str = "gpt-4-0125-preview",
         decompose_model: str = None,
         checkworthy_model: str = None,
         query_generator_model: str = None,
@@ -95,7 +95,7 @@ class FactCheck:
             return api_data_dict
 
         # step 3
-        claim_query_dict = self.query_generator.generate_query(claims=claims)
+        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 
