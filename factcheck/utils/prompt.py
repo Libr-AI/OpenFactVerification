@@ -1,36 +1,24 @@
 # Used prompts
 CHECKWORTHY_PROMPT = """
-Your task is to determine whether each of the given text is a factual statement (that may be wrong).
-Note that:
-1. opinion usually not a factual statement (e.g., "love is painful");
-2. statement with ambiguous references cannot be treated as a factual statement (e.g., "he is a professor" is not a factual statement without any other reference of "he");
-3. if a statement has any factual parts, it should be treated as factual statement. (e.g., "Diego Maradona led Argentina to victory in the 1986 FIFA world cup." contains the factual that "Argentina was victory in the 1986 FIFA world cup").
-You should return a JSON with each claim as a key, and "Yes" or "No" (followed by the reason) as the value.
+Your task is to evaluate each provided statement to determine if it presents information whose factuality can be objectively verified by humans, irrespective of the statement's current accuracy. Consider the following guidelines:
+1. Opinions versus Facts: Distinguish between opinions, which are subjective and not verifiable, and statements that assert factual information, even if broad or general. Focus on whether there's a factual claim that can be investigated.
+2. Clarity and Specificity: Statements must have clear and specific references to be verifiable (e.g., "he is a professor" is not verifiable without knowing who "he" is).
+3. Presence of Factual Information: Consider a statement verifiable if it includes factual elements that can be checked against evidence or reliable sources, even if the overall statement might be broad or incorrect.
+Your response should be in JSON format, with each statement as a key and either "Yes" or "No" as the value, along with a brief rationale for your decision.
 
-For example, for the following claims (each line is a claim):
+For example, given these statements:
 1. Gary Smith is a distinguished professor of economics.
 2. He is a professor at MBZUAI.
-3. Copper (Cu) forms elemental iron when it reacts with ferrous sulphate.
-4. It forms elemental iron when it reacts with ferrous sulphate.
-5. Georgia is the largest producer of peaches in the United States.
-6. Iphone is better than Huawei.
-7. LLaMA authors trained smaller versions of the model with fewer parameters than 4.5 billion.
-8. Terraform modules can be easily tested.
+3. Obama is the president of the UK.
 
-The output should be:
+The expected output is:
 {{
-    "Gary Smith is a distinguished professor of economics.": "Yes",
-    "He is a professor at MBZUAI.": "No (We don't know who he is, so it's not possible to judge the factuality of the claim)",
-    "Copper (Cu) forms elemental iron when it reacts with ferrous sulphate.": "Yes",
-    "It forms elemental iron when it reacts with ferrous sulphate.": "No (ambiguous reference, as we don't know what 'it' means)",
-    "Georgia is the largest producer of peaches in the United States.": "Yes",
-    "Iphone is better than Huawei.": "No (opinion)",
-    "LLaMA authors trained smaller versions of the model with fewer parameters than 4.5 billion.": "Yes",
-    "Terraform modules can be easily tested.": "No (opinion)",
+    "Gary Smith is a distinguished professor of economics.": "Yes (The statement contains verifiable factual information about Gary Smith's professional title and field.)",
+    "He is a professor at MBZUAI.": "No (The statement cannot be verified due to the lack of clear reference to who 'he' is.)",
+    "Obama is the president of the UK.": "Yes (This statement contain verifiable information regarding the political leadership of a country.)"
 }}
 
-
-For claims:
+For these statements:
 {texts}
 
 The output should be:

@@ -1,5 +1,3 @@
-# coding:utf8
-
 import requests
 import backoff
 import time
@@ -49,7 +47,7 @@ async def httpx_get(url: str, headers: dict):
                 return False, None
             else:
                 return True, response
-    except Exception as e:
+    except Exception as e:  # noqa: F841
         return False, None
 
 
@@ -87,7 +85,7 @@ def parse_response(response: requests.Response, url: str, query: str = None):
         texts = soup.findAll(text=True)
         # Filter out invisible text from the page.
         visible_text = filter(is_tag_visible, texts)
-    except Exception as _:
+    except Exception as _:  # noqa: F841
         return None, url, query
 
     # Returns all the text concatenated as a string.
@@ -111,7 +109,7 @@ def scrape_url(url: str, timeout: float = 3):
     try:
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
-    except requests.exceptions.RequestException as _:
+    except requests.exceptions.RequestException as _:  # noqa: F841
         return None, url
 
     # Extract out all text from the tags
@@ -120,7 +118,7 @@ def scrape_url(url: str, timeout: float = 3):
         texts = soup.findAll(text=True)
         # Filter out invisible text from the page.
         visible_text = filter(is_tag_visible, texts)
-    except Exception as _:
+    except Exception as _:  # noqa: F841
         return None, url
 
     # Returns all the text concatenated as a string.

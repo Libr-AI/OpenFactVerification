@@ -1,4 +1,3 @@
-# coding:utf8
 from __future__ import annotations
 
 import time
@@ -65,9 +64,10 @@ class FactCheck:
             logger.info(f"== response claims {i}: {claim}")
 
         # step 2
-        checkworthy_claims, pairwise_checkworthy = (
-            self.checkworthy.identify_checkworthiness(claims)
-        )
+        (
+            checkworthy_claims,
+            pairwise_checkworthy,
+        ) = self.checkworthy.identify_checkworthiness(claims)
         for i, claim in enumerate(checkworthy_claims):
             logger.info(f"== Check-worthy claims {i}: {claim}")
 
@@ -95,7 +95,9 @@ class FactCheck:
             return api_data_dict
 
         # step 3
-        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
+        claim_query_dict = self.query_generator.generate_query(
+            claims=checkworthy_claims
+        )
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 
