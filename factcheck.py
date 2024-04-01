@@ -1,4 +1,3 @@
-# coding:utf8
 from factcheck.core.FactCheck import FactCheck
 from factcheck.utils.multimodal import modal_normalization
 import argparse
@@ -16,7 +15,7 @@ def main(model: str, modal: str, input: str):
     factcheck = FactCheck(default_model=model)
     content = modal_normalization(modal, input)
     res = factcheck.check_response(content)
-    print(json.dumps(res['step_info'], indent=4))
+    print(json.dumps(res["step_info"], indent=4))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,3 @@
-# encoding = utf-8
-
 import os
 import logging
 from flask import g
@@ -17,7 +15,7 @@ class CustomLogger:
         # Create a custom logger
         self.logger = logging.getLogger("FactCheck")
         self.logger.setLevel(loglevel)
-        #Create a handler for writing to the log file
+        # Create a handler for writing to the log file
         if not os.path.exists("./log"):
             # If the directory does not exist, create it
             os.makedirs("./log")

@@ -1,13 +1,12 @@
-# coding:utf8
 from __future__ import annotations
 from factcheck.utils.prompt import QGEN_PROMPT
 from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
+logger = CustomLogger(__name__).getlog()
+
 
 class QueryGenerator:
-    logger = CustomLogger(__name__).getlog()
-
     def __init__(self, model: str = "gpt-3.5-turbo") -> None:
         """Initialize the QueryGenerator class
 
@@ -57,8 +56,10 @@ class QueryGenerator:
                 try:
                     _questions = eval(_response)["Questions"]
                     generated_questions[_index] = _questions
-                except:
-                    pass
+                except:  # noqa: E722
+                    logger.info(
+                        f"Warning: ChatGPT response parse fail, retry {attempts}."
+                    )
             attempts += 1
 
         # ensure that each claim has at least one question which is the claim itself

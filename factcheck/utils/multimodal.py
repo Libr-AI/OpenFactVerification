@@ -1,58 +1,59 @@
 from factcheck.config.secret_dict import openai_dict
 from openai import OpenAI
-import cv2, base64, requests
+import cv2
+import base64
+import requests
 from factcheck.config.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
+
 def voice2text(input):
     # voice to input
     client = OpenAI(api_key=openai_dict["key"])
-    audio_file= open(input, "rb")
+    audio_file = open(input, "rb")
     transcription = client.audio.transcriptions.create(
-    model="whisper-1",
-    file=audio_file
+        model="whisper-1", file=audio_file
     )
     return transcription.text
+
 
 def image2text(input):
     # Function to encode the image
     def encode_image(image_path):
         with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+            return base64.b64encode(image_file.read()).decode("utf-8")
 
     # Getting the base64 string
     base64_image = encode_image(input)
 
     headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {openai_dict['key']}"
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {openai_dict['key']}",
     }
 
     payload = {
-    "model": "gpt-4-vision-preview",
-    "messages": [
-        {
-        "role": "user",
-        "content": [
+        "model": "gpt-4-vision-preview",
+        "messages": [
             {
-            "type": "text",
-            "text": "What’s in this image?"
-            },
-            {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/jpeg;base64,{base64_image}"
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "What’s in this image?"},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                    },
+                ],
             }
-            }
-        ]
-        }
-    ],
-    "max_tokens": 300
+        ],
+        "max_tokens": 300,
     }
 
-    caption = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    caption = requests.post(
+        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload
+    )
     return caption.json()["choices"][0]["message"]["content"]
+
 
 def video2text(input):
     # Read the video and convert it to pictures
@@ -88,7 +89,8 @@ def video2text(input):
     result = client.chat.completions.create(**params)
     return result.choices[0].message.content
 
-def modal_normalization(modal = "text", input = None):
+
+def modal_normalization(modal="text", input=None):
     logger.info(f"== Processing: Modal: {modal}, Input: {input}")
     if modal == "string":
         response = str(input)

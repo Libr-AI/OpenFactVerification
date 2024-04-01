@@ -1,4 +1,3 @@
-# coding:utf8
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import ProcessPoolExecutor
@@ -8,10 +7,10 @@ from copy import deepcopy
 from factcheck.utils.web_util import parse_response, crawl_web
 from factcheck.config.CustomLogger import CustomLogger
 
+logger = CustomLogger(__name__).getlog()
+
 
 class EvidenceRetrieve:
-    logger = CustomLogger(__name__).getlog()
-
     def __init__(self, model: str = "gpt-3.5-turbo") -> None:
         """Initialize the EvidenceRetrieve class.
         sentences_per_passage: Number of sentences for each passage.
@@ -75,7 +74,7 @@ class EvidenceRetrieve:
         """
         claim_evidence_dict = {}
         for claim, query_list in claim_query_dict.items():
-            self.logger.info(f"Collecting evidences for claim : {claim}")
+            logger.info(f"Collecting evidences for claim : {claim}")
             evidences = self._retrieve_evidence4singleclaim(
                 claim, query_list=query_list
             )
@@ -242,9 +241,7 @@ class EvidenceRetrieve:
         """
         passages = []
         try:
-            EvidenceRetrieve.logger.info(
-                "========web text len: {} =======".format((len(text)))
-            )
+            logger.info("========web text len: {} =======".format((len(text))))
             doc = tokenizer(text[:500000])  # Take 500k chars to not break tokenization.
             sents = [
                 s.text.replace("\n", " ")
@@ -263,8 +260,8 @@ class EvidenceRetrieve:
                 )
         except (
             UnicodeEncodeError
-        ) as _:  # Sometimes run into Unicode error when tokenizing.
-            EvidenceRetrieve.logger.error(
-                "Unicode error when using Spacy. Skipping text."
+        ) as e:  # Sometimes run into Unicode error when tokenizing.
+            logger.error(
+                f"Unicode error when using Spacy. Skipping text. Error message {e}"
             )
         return passages

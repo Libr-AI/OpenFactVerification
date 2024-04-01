@@ -1,13 +1,12 @@
-# coding:utf8
-
 from factcheck.utils.prompt import SENTENCES_TO_CLAIMS_PROMPT
 from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 import nltk
 
-class Decompose:
-    logger = CustomLogger(__name__).getlog()
+logger = CustomLogger(__name__).getlog()
 
+
+class Decompose:
     def __init__(self, model="gpt-3.5-turbo"):
         """Initialize the Decompose class
 
@@ -57,14 +56,10 @@ class Decompose:
                 if isinstance(claims, list) and len(claims) > 0:
                     return claims
             except Exception as e:
-                Decompose.logger.error(
-                    f"Parse chatgpt result error {e}, response is: {response}"
-                )
-                Decompose.logger.error(
-                    f"Parse chatgpt result error, prompt is: {messages}"
-                )
+                logger.error(f"Parse chatgpt result error {e}, response is: {response}")
+                logger.error(f"Parse chatgpt result error, prompt is: {messages}")
 
-        Decompose.logger.info(
+        logger.info(
             f"It does not output a list of sentences correctly, return self.doc2sent_tool split results."
         )
         claims = self.doc2sent(doc)

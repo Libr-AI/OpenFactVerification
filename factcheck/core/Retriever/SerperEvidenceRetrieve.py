@@ -9,10 +9,10 @@ from factcheck.config.secret_dict import serper_dict
 from factcheck.config.CustomLogger import CustomLogger
 from factcheck.utils.web_util import crawl_web
 
+logger = CustomLogger(__name__).getlog()
+
 
 class SerperEvidenceRetrieve:
-    logger = CustomLogger(__name__).getlog()
-
     def __init__(self, model: str = "gpt-3.5-turbo") -> None:
         """Initialize the SerperEvidenceRetrieve class
 
@@ -34,7 +34,7 @@ class SerperEvidenceRetrieve:
         Returns:
             dict: a dictionary of claims and their corresponding evidences.
         """
-        self.logger.info(f"Collecting evidences ...")
+        logger.info(f"Collecting evidences ...")
         claim_query_dict_L = list(claim_query_dict.items())
         query_list = [y for x in claim_query_dict_L for y in x[1]]
         evidence_list = self._retrieve_evidence_4_all_claim(
@@ -47,7 +47,7 @@ class SerperEvidenceRetrieve:
             claim_evidence_dict[claim] = evidence_list[i : i + len(queries)]
             i += len(queries)
         assert i == len(evidence_list)
-        self.logger.info(f"Collect evidences done!")
+        logger.info(f"Collect evidences done!")
         return claim_evidence_dict
 
     def _retrieve_evidence_4_all_claim(
@@ -71,7 +71,7 @@ class SerperEvidenceRetrieve:
         serper_response = self._request_serper_api(query_list)
 
         if serper_response is None:
-            self.logger.error("Serper API request error!")
+            logger.error("Serper API request error!")
             return evidences
 
         # get the results for queries with an answer box
@@ -79,7 +79,7 @@ class SerperEvidenceRetrieve:
         _snippet_to_check = []
         for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
             if query != result.get("searchParameters").get("q"):
-                self.logger.error(
+                logger.error(
                     "Serper change query from {} TO {}".format(
                         query, result.get("searchParameters").get("q")
                     )
@@ -219,5 +219,5 @@ class SerperEvidenceRetrieve:
         try:
             response = requests.request("POST", url, headers=headers, data=payload)
         except Exception as e:
-            pass
+            logger.info(f"Warning, Serper API error: {e}.")
         return response

@@ -1,14 +1,12 @@
-# coding:utf8
-
 from typing import List
 from factcheck.utils.prompt import CHECKWORTHY_PROMPT
 from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
+logger = CustomLogger(__name__).getlog()
+
 
 class Checkworthy:
-    logger = CustomLogger(__name__).getlog()
-
     def __init__(self, model: str = "gpt-3.5-turbo"):
         """Initialize the Checkworthy class
 
@@ -53,6 +51,6 @@ class Checkworthy:
                 assert len(valid_answer) == len(results)
                 break
             except Exception as e:
-                Checkworthy.logger.error(f"====== Error, the response is: {response}")
-                Checkworthy.logger.error(f"====== Our input is: {messages}")
+                logger.error(f"====== Error: {e}, the response is: {response}")
+                logger.error(f"====== Our input is: {messages}")
         return checkworthy_claims, results

@@ -1,5 +1,3 @@
-# coding:utf8
-
 from __future__ import annotations
 
 import json
@@ -7,10 +5,10 @@ from factcheck.utils.prompt import VERIFY_PROMPT
 from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
+logger = CustomLogger(__name__).getlog()
+
 
 class ClaimVerify:
-    logger = CustomLogger(__name__).getlog()
-
     def __init__(self, model: str = "gpt-3.5-turbo"):
         """Initialize the ClaimVerify class
 
@@ -85,8 +83,10 @@ class ClaimVerify:
                         for k in ["reasoning", "error", "correction", "factuality"]
                     )
                     factual_results[_index] = _response_json
-                except:
-                    pass
+                except:  # noqa: E722
+                    logger.info(
+                        f"Warning: ChatGPT response parse fail, retry {attempts}."
+                    )
             attempts += 1
 
         _template_results = {

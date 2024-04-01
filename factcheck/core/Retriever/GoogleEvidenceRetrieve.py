@@ -1,4 +1,3 @@
-# coding:utf8
 from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from factcheck.utils.web_util import common_web_request, crawl_google_web
