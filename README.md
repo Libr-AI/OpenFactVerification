@@ -9,7 +9,7 @@
 # OpenFactVerification: An Open-source Tool for Fact Verification
 
 ## Overview
-OpenFactChecking is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join our [slack channel (TBA)](to_be_added)!
+OpenFactChecking is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join us on [Discord]((https://discord.gg/NRge6RS7))!
 
 ## Components
 - **Decomposer:** Splits a long text into several independent claims for further processing.
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 
 3. Configure api keys
 
-You can choose to export essential api key to the environment, or configure it in `factcheck/config/secret_dict.py`.
+You can choose to export essential api key to the environment, or configure it in `factcheck/config/secret_dict.py`. To stop tracking your own API keys, please use `git update-index --skip-worktree factcheck/config/secret_dict.py` .
 
 - Example: Export essential api key to the environment
 ```bash
