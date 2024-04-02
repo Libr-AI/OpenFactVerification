@@ -20,7 +20,7 @@ def main(model: str, modal: str, input: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="gpt-3.5-turbo-1106")
+    parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
     parser.add_argument("--modal", type=str, default="text")
     parser.add_argument("--input", type=str, default="demo_data/text.txt")
     args = parser.parse_args()
