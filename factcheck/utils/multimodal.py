@@ -12,9 +12,7 @@ def voice2text(input):
     # voice to input
     client = OpenAI(api_key=openai_dict["key"])
     audio_file = open(input, "rb")
-    transcription = client.audio.transcriptions.create(
-        model="whisper-1", file=audio_file
-    )
+    transcription = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
     return transcription.text
 
 
@@ -49,9 +47,7 @@ def image2text(input):
         "max_tokens": 300,
     }
 
-    caption = requests.post(
-        "https://api.openai.com/v1/chat/completions", headers=headers, json=payload
-    )
+    caption = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     return caption.json()["choices"][0]["message"]["content"]
 
 

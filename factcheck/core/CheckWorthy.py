@@ -15,9 +15,7 @@ class Checkworthy:
         """
         self.chatgpt_client = GPTClient(model=model)
 
-    def identify_checkworthiness(
-        self, texts: List[str], num_retries: int = 3
-    ) -> List[str]:
+    def identify_checkworthiness(self, texts: List[str], num_retries: int = 3) -> List[str]:
         """Use GPT to identify whether candidate claims are worth fact checking. if gpt is unable to return correct checkworthy_claims, we assume all texts are checkworthy.
 
         Args:
@@ -33,9 +31,7 @@ class Checkworthy:
         user_input = CHECKWORTHY_PROMPT.format(texts=joint_texts)
         messages = self.chatgpt_client.construct_message_list([user_input])
         for i in range(num_retries):
-            response = self.chatgpt_client.multi_call(
-                messages, num_retries=1, seed=42 + i
-            )
+            response = self.chatgpt_client.multi_call(messages, num_retries=1, seed=42 + i)
             try:
                 results = eval(response)
                 valid_answer = list(
@@ -44,9 +40,7 @@ class Checkworthy:
                         results.items(),
                     )
                 )
-                checkworthy_claims = list(
-                    filter(lambda x: x[1].startswith("Yes"), results.items())
-                )
+                checkworthy_claims = list(filter(lambda x: x[1].startswith("Yes"), results.items()))
                 checkworthy_claims = list(map(lambda x: x[0], checkworthy_claims))
                 assert len(valid_answer) == len(results)
                 break

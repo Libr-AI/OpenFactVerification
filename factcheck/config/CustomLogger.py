@@ -20,18 +20,14 @@ class CustomLogger:
             # If the directory does not exist, create it
             os.makedirs("./log")
         env = os.environ.get("env", "dev")
-        fh = TimedRotatingFileHandler(
-            filename="./log/factcheck_{}.log".format(env), when="D"
-        )
+        fh = TimedRotatingFileHandler(filename="./log/factcheck_{}.log".format(env), when="D")
         fh.setLevel(loglevel)
         if not self.logger.handlers:
             # Create another handler for output to the console
             ch = logging.StreamHandler()
             ch.setLevel(loglevel)
             # Define the output format of the handler
-            formatter = logging.Formatter(
-                "[%(levelname)s]%(asctime)s %(filename)s:%(lineno)d: %(message)s"
-            )
+            formatter = logging.Formatter("[%(levelname)s]%(asctime)s %(filename)s:%(lineno)d: %(message)s")
             fh.setFormatter(formatter)
             ch.setFormatter(formatter)
             # Add handler to logger

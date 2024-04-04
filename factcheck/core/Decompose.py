@@ -59,8 +59,6 @@ class Decompose:
                 logger.error(f"Parse chatgpt result error {e}, response is: {response}")
                 logger.error(f"Parse chatgpt result error, prompt is: {messages}")
 
-        logger.info(
-            f"It does not output a list of sentences correctly, return self.doc2sent_tool split results."
-        )
+        logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
         claims = self.doc2sent(doc)
         return claims

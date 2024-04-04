@@ -139,9 +139,7 @@ class GPTClient:
 
         loop = asyncio.get_running_loop()
         # TODO: support seed
-        response = await loop.run_in_executor(
-            None, partial(self._call, messages, seed=seed)
-        )
+        response = await loop.run_in_executor(None, partial(self._call, messages, seed=seed))
 
         self.total_traffic += self.get_request_length(messages)
         self.traffic_queue.append((time.time(), self.get_request_length(messages)))
@@ -154,10 +152,7 @@ class GPTClient:
 
     def call_chatgpt_multiple_async(self, messages_list, seed=42):
         """Calls ChatGPT asynchronously for multiple prompts and returns a list of responses."""
-        tasks = [
-            self.call_chatgpt_async(messages=messages, seed=seed)
-            for messages in messages_list
-        ]
+        tasks = [self.call_chatgpt_async(messages=messages, seed=seed) for messages in messages_list]
         asyncio.set_event_loop(asyncio.SelectorEventLoop())
         loop = asyncio.get_event_loop()
         responses = loop.run_until_complete(asyncio.gather(*tasks))
@@ -165,10 +160,7 @@ class GPTClient:
 
     def call_chatgpt_multiple_async_with_key(self, messages_dict):
         """Calls ChatGPT asynchronously for multiple prompts and returns a list of responses."""
-        tasks = [
-            self.call_chatgpt_async(messages=messages, key=key)
-            for key, messages in messages_dict.items()
-        ]
+        tasks = [self.call_chatgpt_async(messages=messages, key=key) for key, messages in messages_dict.items()]
         asyncio.set_event_loop(asyncio.SelectorEventLoop())
         loop = asyncio.get_event_loop()
         responses = loop.run_until_complete(asyncio.gather(*tasks))
@@ -177,10 +169,7 @@ class GPTClient:
     def expire_old_traffic(self):
         """Expires traffic older than the request window."""
         current_time = time.time()
-        while (
-            self.traffic_queue
-            and self.traffic_queue[0][0] + self.request_window < current_time
-        ):
+        while self.traffic_queue and self.traffic_queue[0][0] + self.request_window < current_time:
             self.total_traffic -= self.traffic_queue.popleft()[1]
 
     def construct_message_dict(
@@ -189,9 +178,7 @@ class GPTClient:
         match_key_list: list[str],
         system_role: str = "You are a helpful factcheck assistant designed to output JSON.",
     ):
-        assert len(prompt_list) == len(
-            match_key_list
-        ), "match_key_list length has to be equal to prompt_list length"
+        assert len(prompt_list) == len(match_key_list), "match_key_list length has to be equal to prompt_list length"
         messages_dict = dict()
         for key, prompt in zip(match_key_list, prompt_list):
             messages = [

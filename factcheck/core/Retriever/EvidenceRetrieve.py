@@ -24,9 +24,7 @@ class EvidenceRetrieve:
         """
         import spacy
 
-        self.tokenizer = spacy.load(
-            "en_core_web_sm", disable=["ner", "tagger", "lemmatizer"]
-        )
+        self.tokenizer = spacy.load("en_core_web_sm", disable=["ner", "tagger", "lemmatizer"])
         from sentence_transformers import CrossEncoder
         import torch
 
@@ -75,9 +73,7 @@ class EvidenceRetrieve:
         claim_evidence_dict = {}
         for claim, query_list in claim_query_dict.items():
             logger.info(f"Collecting evidences for claim : {claim}")
-            evidences = self._retrieve_evidence4singleclaim(
-                claim, query_list=query_list
-            )
+            evidences = self._retrieve_evidence4singleclaim(claim, query_list=query_list)
             claim_evidence_dict[claim] = evidences
         return claim_evidence_dict
 
@@ -93,12 +89,8 @@ class EvidenceRetrieve:
         """
 
         query_url_dict = self._get_query_urls(query_list)
-        query_scraped_results_dict = self._crawl_and_parse_web(
-            query_url_dict=query_url_dict
-        )
-        evidences = self._get_relevant_snippets(
-            query_scraped_results_dict=query_scraped_results_dict
-        )
+        query_scraped_results_dict = self._crawl_and_parse_web(query_url_dict=query_url_dict)
+        evidences = self._get_relevant_snippets(query_scraped_results_dict=query_scraped_results_dict)
         return evidences
 
     def _crawl_and_parse_web(self, query_url_dict: dict[str, list]):
@@ -128,9 +120,7 @@ class EvidenceRetrieve:
             # remove if crawled web text is null
             scraped_results = [pair for pair in scraped_results_list if pair[0]]
             # get top scraped results by self.max_search_result_per_query
-            query_scraped_results_dict[query] = scraped_results[
-                : self.max_search_result_per_query
-            ]
+            query_scraped_results_dict[query] = scraped_results[: self.max_search_result_per_query]
         # print("query_scraped_res", query_scraped_results_dict)
         return query_scraped_results_dict
 
@@ -146,9 +136,7 @@ class EvidenceRetrieve:
         # 4+ 5 chunk to split web text to several passage and score and sort
         snippets_dict = {}
         for query, scraped_results in query_scraped_results_dict.items():
-            snippets_dict[query] = self._sorted_passage_by_relevant_score(
-                query, scraped_results=scraped_results
-            )
+            snippets_dict[query] = self._sorted_passage_by_relevant_score(query, scraped_results=scraped_results)
             snippets_dict[query] = deepcopy(
                 sorted(
                     snippets_dict[query],
@@ -164,10 +152,7 @@ class EvidenceRetrieve:
             # Take top evidences for each question
             index = int(len(evidences["aggregated"]) / len(evidences["question_wise"]))
             evidences["aggregated"].append(evidences["question_wise"][key][index])
-            if (
-                len(evidences["aggregated"])
-                >= self.max_passages_per_search_result_to_return
-            ):
+            if len(evidences["aggregated"]) >= self.max_passages_per_search_result_to_return:
                 break
         # 6
         return evidences["aggregated"]
@@ -246,9 +231,7 @@ class EvidenceRetrieve:
             sents = [
                 s.text.replace("\n", " ")
                 for s in doc.sents
-                if min_sentence_len
-                <= len(s.text)
-                <= max_sentence_len  # Long sents are usually metadata.
+                if min_sentence_len <= len(s.text) <= max_sentence_len  # Long sents are usually metadata.
             ]
             for idx in range(0, len(sents), self.sliding_distance):
                 passages.append(
@@ -258,10 +241,6 @@ class EvidenceRetrieve:
                         idx + self.sentences_per_passage - 1,
                     )
                 )
-        except (
-            UnicodeEncodeError
-        ) as e:  # Sometimes run into Unicode error when tokenizing.
-            logger.error(
-                f"Unicode error when using Spacy. Skipping text. Error message {e}"
-            )
+        except UnicodeEncodeError as e:  # Sometimes run into Unicode error when tokenizing.
+            logger.error(f"Unicode error when using Spacy. Skipping text. Error message {e}")
         return passages
