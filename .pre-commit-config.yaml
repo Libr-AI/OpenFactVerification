@@ -28,14 +28,15 @@ repos:
         args: [--remove]
       - id: mixed-line-ending
         args: [--fix=lf]
-  - repo: https://github.com/pycqa/flake8
-    rev: 3.7.9
-    hooks:
-      - id: flake8
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.12.1
     hooks:
       - id: black
+        args: [--line-length=127]
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.4
     hooks:

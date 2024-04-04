@@ -36,30 +36,18 @@ class QueryGenerator:
             messages_list.append(user_input)
 
         while (attempts < generating_time) and ([] in generated_questions):
-            _messages = [
-                _message
-                for _i, _message in enumerate(messages_list)
-                if generated_questions[_i] == []
-            ]
-            _indices = [
-                _i
-                for _i, _message in enumerate(messages_list)
-                if generated_questions[_i] == []
-            ]
+            _messages = [_message for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
+            _indices = [_i for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
 
             _message_list = self.chatgpt_client.construct_message_list(_messages)
-            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(
-                _message_list
-            )
+            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(_message_list)
 
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _questions = eval(_response)["Questions"]
                     generated_questions[_index] = _questions
                 except:  # noqa: E722
-                    logger.info(
-                        f"Warning: ChatGPT response parse fail, retry {attempts}."
-                    )
+                    logger.info(f"Warning: ChatGPT response parse fail, retry {attempts}.")
             attempts += 1
 
         # ensure that each claim has at least one question which is the claim itself

@@ -21,9 +21,7 @@ class SerperEvidenceRetrieve:
         """
         self.lang = "en"
 
-    def retrieve_evidence(
-        self, claim_query_dict, top_k: int = 5, snippet_extend_flag: bool = True
-    ):
+    def retrieve_evidence(self, claim_query_dict, top_k: int = 5, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given claims
 
         Args:
@@ -34,7 +32,7 @@ class SerperEvidenceRetrieve:
         Returns:
             dict: a dictionary of claims and their corresponding evidences.
         """
-        logger.info(f"Collecting evidences ...")
+        logger.info("Collecting evidences ...")
         claim_query_dict_L = list(claim_query_dict.items())
         query_list = [y for x in claim_query_dict_L for y in x[1]]
         evidence_list = self._retrieve_evidence_4_all_claim(
@@ -47,12 +45,10 @@ class SerperEvidenceRetrieve:
             claim_evidence_dict[claim] = evidence_list[i : i + len(queries)]
             i += len(queries)
         assert i == len(evidence_list)
-        logger.info(f"Collect evidences done!")
+        logger.info("Collect evidences done!")
         return claim_evidence_dict
 
-    def _retrieve_evidence_4_all_claim(
-        self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True
-    ):
+    def _retrieve_evidence_4_all_claim(self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given queries
 
         Args:
@@ -79,11 +75,7 @@ class SerperEvidenceRetrieve:
         _snippet_to_check = []
         for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
             if query != result.get("searchParameters").get("q"):
-                logger.error(
-                    "Serper change query from {} TO {}".format(
-                        query, result.get("searchParameters").get("q")
-                    )
-                )
+                logger.error("Serper change query from {} TO {}".format(query, result.get("searchParameters").get("q")))
 
             if "answerBox" in result:
                 if "answer" in result["answerBox"]:
@@ -98,22 +90,15 @@ class SerperEvidenceRetrieve:
                     }
             else:
                 results = result.get("organic", [])[:top_k]  # Choose top 5 result
-                merge_evidence_text = [
-                    f"Text: {_result['snippet']} \n Source: {_result['link']}"
-                    for _result in results
-                ]
-                merge_evidence_text = [
-                    re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text
-                ]
+                merge_evidence_text = [f"Text: {_result['snippet']} \n Source: {_result['link']}" for _result in results]
+                merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
                 evidences[i] = {
                     "text": "\n\n".join(merge_evidence_text),
                     "url": "Multiple",
                 }
 
                 # Save query-url pair, 1 query may have multiple urls
-                query_url_dict.update(
-                    {query: [result.get("link") for result in results]}
-                )
+                query_url_dict.update({query: [result.get("link") for result in results]})
                 _snippet_to_check += [result["snippet"] for result in results]
 
         # return if there is no snippet to check or snippet_extend_flag is False
@@ -147,12 +132,8 @@ class SerperEvidenceRetrieve:
                 if snippet_start == -1:
                     return snippet
                 else:
-                    pre_context_range = (
-                        0  # Number of characters around the snippet to display
-                    )
-                    post_context_range = (
-                        500  # Number of characters around the snippet to display
-                    )
+                    pre_context_range = 0  # Number of characters around the snippet to display
+                    post_context_range = 500  # Number of characters around the snippet to display
                     start = max(0, snippet_start - pre_context_range)
                     end = snippet_start + len(snippet) + post_context_range
                     return text[start:end] + " ..."
@@ -181,13 +162,8 @@ class SerperEvidenceRetrieve:
         for _query in query_snippet_dict.keys():
             _query_index = query_list.index(_query)
             _snippet_list = query_snippet_dict[_query]
-            merge_evidence_text = [
-                f"Text: {snippet} \n Source: {_url}"
-                for snippet, _url in zip(_snippet_list, url_to_check)
-            ]
-            merge_evidence_text = [
-                re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text
-            ]
+            merge_evidence_text = [f"Text: {snippet} \n Source: {_url}" for snippet, _url in zip(_snippet_list, url_to_check)]
+            merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
             evidences[_query_index] = {
                 "text": "\n\n".join(merge_evidence_text),
                 "url": "Multiple",
@@ -211,9 +187,7 @@ class SerperEvidenceRetrieve:
             "Content-Type": "application/json",
         }
 
-        questions_data = [
-            {"q": question, "autocorrect": False} for question in questions
-        ]
+        questions_data = [{"q": question, "autocorrect": False} for question in questions]
         payload = json.dumps(questions_data)
         response = None
         try:

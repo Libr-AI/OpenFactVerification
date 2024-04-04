@@ -21,16 +21,12 @@ class GoogleEvidenceRetrieve(EvidenceRetrieve):
             for page in range(0, self.num_web_pages, 10):
                 # here page is google search's bottom page meaning, click 2 -> start=10
                 # url = "https://www.google.com/search?q={}&start={}".format(query, page)
-                url = "https://www.google.com/search?q={}&lr=lang_{}&hl={}&start={}".format(
-                    query, self.lang, self.lang, page
-                )
+                url = "https://www.google.com/search?q={}&lr=lang_{}&hl={}&start={}".format(query, self.lang, self.lang, page)
                 curr_query_list.append(url)
                 all_request_url_dict[query] = curr_query_list
 
         crawled_all_page_urls_dict = dict()
-        with ThreadPoolExecutor(
-            max_workers=len(all_request_url_dict.values())
-        ) as executor:
+        with ThreadPoolExecutor(max_workers=len(all_request_url_dict.values())) as executor:
             futures = list()
             for query, urls in all_request_url_dict.items():
                 for url in urls:

@@ -38,9 +38,7 @@ class ClaimVerify:
             claim_detail_dict[claim] = result
         return claim_detail_dict
 
-    def _verify_all_claims(
-        self, claims: list[str], evidence_lists: list[list], num_retries=3
-    ) -> list[dict[str, any]]:
+    def _verify_all_claims(self, claims: list[str], evidence_lists: list[list], num_retries=3) -> list[dict[str, any]]:
         """Verify the factuality of the claims with respect to the given evidences
 
         Args:
@@ -60,33 +58,18 @@ class ClaimVerify:
             messages_list.append(user_input)
 
         while (attempts < num_retries) and (None in factual_results):
-            _messages = [
-                _message
-                for _i, _message in enumerate(messages_list)
-                if factual_results[_i] is None
-            ]
-            _indices = [
-                _i
-                for _i, _message in enumerate(messages_list)
-                if factual_results[_i] is None
-            ]
+            _messages = [_message for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
+            _indices = [_i for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
 
             _message_list = self.chatgpt_client.construct_message_list(_messages)
-            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(
-                _message_list
-            )
+            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(_message_list)
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _response_json = json.loads(_response)
-                    assert all(
-                        k in _response_json
-                        for k in ["reasoning", "error", "correction", "factuality"]
-                    )
+                    assert all(k in _response_json for k in ["reasoning", "error", "correction", "factuality"])
                     factual_results[_index] = _response_json
                 except:  # noqa: E722
-                    logger.info(
-                        f"Warning: ChatGPT response parse fail, retry {attempts}."
-                    )
+                    logger.info(f"Warning: ChatGPT response parse fail, retry {attempts}.")
             attempts += 1
 
         _template_results = {
@@ -96,8 +79,5 @@ class ClaimVerify:
             "factuality": False,
         }
         # if cannot get correct response within num_retries times.
-        factual_results = [
-            _item if _item is not None else _template_results
-            for _item in factual_results
-        ]
+        factual_results = [_item if _item is not None else _template_results for _item in factual_results]
         return factual_results

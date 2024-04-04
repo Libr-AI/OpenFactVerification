@@ -28,32 +28,18 @@ class FactCheck:
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
         # claim getter
-        self.decomposer = Decompose(
-            model=default_model if decompose_model is None else decompose_model
-        )
+        self.decomposer = Decompose(model=default_model if decompose_model is None else decompose_model)
         # checkworthy
-        self.checkworthy = Checkworthy(
-            model=default_model if checkworthy_model is None else checkworthy_model
-        )
+        self.checkworthy = Checkworthy(model=default_model if checkworthy_model is None else checkworthy_model)
         self.query_generator = QueryGenerator(
-            model=(
-                default_model
-                if query_generator_model is None
-                else query_generator_model
-            )
+            model=(default_model if query_generator_model is None else query_generator_model)
         )
         # evidences crawler
         self.evidence_crawler = SerperEvidenceRetrieve(
-            model=(
-                default_model
-                if evidence_retrieval_model is None
-                else evidence_retrieval_model
-            )
+            model=(default_model if evidence_retrieval_model is None else evidence_retrieval_model)
         )
         # verity claim with evidences
-        self.claimverify = ClaimVerify(
-            model=default_model if claim_verify_model is None else claim_verify_model
-        )
+        self.claimverify = ClaimVerify(model=default_model if claim_verify_model is None else claim_verify_model)
         logger.info("===Sub-modules Init Finished===")
 
     def check_response(self, response: str):
@@ -91,31 +77,25 @@ class FactCheck:
         # Special case, return
         if num_checkworthy_tokens == 0:
             api_data_dict["factuality"] = True
-            logger.info(f"== State: Done! (Nothing to check.)")
+            logger.info("== State: Done! (Nothing to check.)")
             return api_data_dict
 
         # step 3
-        claim_query_dict = self.query_generator.generate_query(
-            claims=checkworthy_claims
-        )
+        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 
         step123_time = time.time()
 
         # step 4
-        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(
-            claim_query_dict=claim_query_dict
-        )
+        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(claim_query_dict=claim_query_dict)
         for claim, evidences in claim_evidence_dict.items():
             logger.info(f"== Claim: {claim}")
             logger.info(f"== Evidence: {evidences}\n")
         step4_time = time.time()
 
         # step 5
-        claim_verify_dict = self.claimverify.verify_claims(
-            claims_evidences_dict=claim_evidence_dict
-        )
+        claim_verify_dict = self.claimverify.verify_claims(claims_evidences_dict=claim_evidence_dict)
         step5_time = time.time()
         logger.info(
             f"== State: Done! \n Total time: {step5_time-st_time:.2f}s. (create claims:{step123_time-st_time:.2f}s |||  retrieve:{step4_time-step123_time:.2f}s ||| verify:{step5_time-step4_time:.2f}s)"
