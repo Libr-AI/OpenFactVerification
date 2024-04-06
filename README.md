@@ -160,7 +160,7 @@ add slack channel here
 ## Cite as
 ```
 @misc{Loki,
-  author = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Han, Xudong and Li, Haonan},
+  author = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Nakov, Preslav and Baldwin, Timothy and Han, Xudong and Li, Haonan},
   title = {Loki: An Open-source Tool for Fact Verification},
   year = {2024},
   publisher = {GitHub},
