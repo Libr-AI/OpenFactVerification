@@ -72,11 +72,14 @@ class FactCheck:
                 "1_decompose": claims,
                 "2_checkworthy": checkworthy_claims,
                 "2_checkworthy_pairwise": pairwise_checkworthy,
+                "3_query_generator": {},
+                "4_evidence_retrieve": {},
+                "5_claim_verify": {},
             },
         }
         # Special case, return
         if num_checkworthy_tokens == 0:
-            api_data_dict["factuality"] = True
+            api_data_dict["factuality"] = "Nothing to check."
             logger.info("== State: Done! (Nothing to check.)")
             return api_data_dict
 
