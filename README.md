@@ -36,7 +36,10 @@ pip install -r requirements.txt
 
 3. Configure api keys
 
-You can choose to export essential api key to the environment, or configure it in `factcheck/config/secret_dict.py`. To stop tracking your own API keys, please use `git update-index --skip-worktree factcheck/config/secret_dict.py` .
+```
+cp factcheck/config/secret_dict.template factcheck/config/secret_dict.py
+```
+You can choose to export essential api key to the environment, or configure it in `factcheck/config/secret_dict.py`.
 
 - Example: Export essential api key to the environment
 ```bash
