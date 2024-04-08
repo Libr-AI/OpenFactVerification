@@ -156,6 +156,9 @@ This project is licensed under the [MIT license](LICENSE.md) - see the LICENSE f
 add slack channel here
 -->
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Libr-AI/OpenFactVerification&type=Date)](https://star-history.com/#Libr-AI/OpenFactVerification&Date)
 
 ## Cite as
 ```
