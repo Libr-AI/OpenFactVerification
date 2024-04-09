@@ -26,7 +26,7 @@ Loki is our open-source solution designed to automate the process of verifying f
 ### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/Libr-AI/factcheckservice.git
+git clone https://github.com/Libr-AI/OpenFactVerification.git
 ```
 2. Navigate to the project directory and install the required packages:
 ```bash
