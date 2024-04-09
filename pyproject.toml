@@ -1,0 +1,28 @@
+[tool.poetry]
+package-mode = false
+name = "openfactverification"
+version = "0.1.0"
+description = "Loki: An Open-source Tool for Fact Verification"
+authors = ["Hao Wang <hao.wang@librai.tech>", "Yuxia Wang <yuxia.wang@mbzuai.ac.ae>", "Minghan Wang <minghan.wang@monash.edu>", "Yilin Geng <yilin.geng@librai.tech>", "Zhen Zhao <zz15391774262@outlook.com>", "Preslav Nakov <preslav.nakov@mbzuai.ac.ae>", "Timothy Baldwin <timothy.baldwin@mbzuai.ac.ae>", "Zenan Zhai <zenan.zhai@librai.tech>", "Xudong Han <xudong.han@librai.tech>", "Haonan Li <haonan.li@librai.tech>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+anthropic = "^0.23.1"
+backoff = "^2.2.1"
+bs4 = "^0.0.2"
+Flask = "^3.0.3"
+httpx = "^0.27.0"
+nltk = "^3.8.1"
+openai = "^1.16.2"
+opencv-python = "^4.9.0.80"
+pandas = "^2.2.1"
+playwright = "^1.42.0"
+playwright-stealth = "^1.0.6"
+tiktoken = "^0.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
