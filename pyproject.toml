@@ -3,9 +3,21 @@ package-mode = false
 name = "openfactverification"
 version = "0.1.0"
 description = "Loki: An Open-source Tool for Fact Verification"
-authors = ["Hao Wang <hao.wang@librai.tech>", "Yuxia Wang <yuxia.wang@mbzuai.ac.ae>", "Minghan Wang <minghan.wang@monash.edu>", "Yilin Geng <yilin.geng@librai.tech>", "Zhen Zhao <zz15391774262@outlook.com>", "Preslav Nakov <preslav.nakov@mbzuai.ac.ae>", "Timothy Baldwin <timothy.baldwin@mbzuai.ac.ae>", "Zenan Zhai <zenan.zhai@librai.tech>", "Xudong Han <xudong.han@librai.tech>", "Haonan Li <haonan.li@librai.tech>"]
-license = "MIT License"
+authors = [
+    "Hao Wang <hao.wang@librai.tech>", 
+    "Yuxia Wang <yuxia.wang@mbzuai.ac.ae>", 
+    "Minghan Wang <minghan.wang@monash.edu>", 
+    "Yilin Geng <yilin.geng@librai.tech>", 
+    "Zhen Zhao <zz15391774262@outlook.com>", 
+    "Preslav Nakov <preslav.nakov@mbzuai.ac.ae>", 
+    "Timothy Baldwin <timothy.baldwin@mbzuai.ac.ae>", 
+    "Zenan Zhai <zenan.zhai@librai.tech>", 
+    "Xudong Han <xudong.han@librai.tech>", 
+    "Haonan Li <haonan.li@librai.tech>"
+]
+license = "MIT"
 readme = "README.md"
+repository = "https://github.com/Libr-AI/OpenFactVerification/"
 
 [tool.poetry.dependencies]
 python = "^3.9"
