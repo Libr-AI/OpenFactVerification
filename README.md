@@ -19,22 +19,29 @@ Loki is our open-source solution designed to automate the process of verifying f
 - **ClaimVerify:** Examines the gathered evidence, determining the veracity of each claim to uphold the integrity of information.
 
 ## Quick Start
-### Prerequisites
-- Python 3.9 or newer
-- Required Python packages are listed in `requirements.txt`
 
-### Installation
-1. Clone the repository:
+### Clone the repository and navigate to the project directory
 ```bash
 git clone https://github.com/Libr-AI/OpenFactVerification.git
+cd OpenFactVerification
 ```
+
+### Installation with poetry (option 1)
+1. Install Poetry by following it [installation guideline](https://python-poetry.org/docs/).
+2. Install all dependencies by running:
+```bash
+poetry install
+```
+
+### Installation with pip (option 2)
+1. Create a Python environment at version 3.9 or newer and activate it.
+
 2. Navigate to the project directory and install the required packages:
 ```bash
-cd factcheckservice
 pip install -r requirements.txt
 ```
 
-3. Configure api keys
+### Configure API keys
 
 ```
 cp factcheck/config/secret_dict.template factcheck/config/secret_dict.py
