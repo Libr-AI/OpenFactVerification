@@ -1,5 +1,4 @@
 from factcheck.utils.prompt import SENTENCES_TO_CLAIMS_PROMPT
-from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 import nltk
 
@@ -7,14 +6,13 @@ logger = CustomLogger(__name__).getlog()
 
 
 class Decompose:
-    def __init__(self, model="gpt-3.5-turbo"):
+    def __init__(self, llm_client):
         """Initialize the Decompose class
 
         Args:
             model (str, optional): The version of the GPT model used for claim decomposition. Defaults to "gpt-3.5-turbo".
         """
-        self.getclaims = self.getclaimsfromgpt
-        self.chatgpt_client = GPTClient(model=model)
+        self.llm_client = llm_client
         self.doc2sent = self._nltk_doc2sent
 
     def _nltk_doc2sent(self, text: str):
@@ -31,7 +29,7 @@ class Decompose:
         sentence_list = [s.strip() for s in sentences if len(s.strip()) >= 3]
         return sentence_list
 
-    def getclaimsfromgpt(self, doc: str, num_retries: int = 3):
+    def getclaims(self, doc: str, num_retries: int = 3):
         """Use GPT to decompose a document into claims
 
         Args:
@@ -44,9 +42,9 @@ class Decompose:
         prompt_text = SENTENCES_TO_CLAIMS_PROMPT
         user_input = prompt_text.format(doc=doc).strip()
 
-        messages = self.chatgpt_client.construct_message_list([user_input])
+        messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
-            response = self.chatgpt_client.multi_call(
+            response = self.llm_client.call(
                 messages=messages,
                 num_retries=1,
                 seed=42 + i,

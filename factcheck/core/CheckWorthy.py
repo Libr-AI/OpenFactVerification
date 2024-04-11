@@ -1,19 +1,18 @@
 from typing import List
 from factcheck.utils.prompt import CHECKWORTHY_PROMPT
-from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class Checkworthy:
-    def __init__(self, model: str = "gpt-3.5-turbo"):
+    def __init__(self, llm_client):
         """Initialize the Checkworthy class
 
         Args:
             model (str, optional): The version of the GPT model used for checkworthy classification. Defaults to "gpt-3.5-turbo".
         """
-        self.chatgpt_client = GPTClient(model=model)
+        self.llm_client = llm_client
 
     def identify_checkworthiness(self, texts: List[str], num_retries: int = 3) -> List[str]:
         """Use GPT to identify whether candidate claims are worth fact checking. if gpt is unable to return correct checkworthy_claims, we assume all texts are checkworthy.
@@ -29,9 +28,9 @@ class Checkworthy:
         # TODO: better handle checkworthiness
         joint_texts = "\n".join([str(i + 1) + ". " + j for i, j in enumerate(texts)])
         user_input = CHECKWORTHY_PROMPT.format(texts=joint_texts)
-        messages = self.chatgpt_client.construct_message_list([user_input])
+        messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
-            response = self.chatgpt_client.multi_call(messages, num_retries=1, seed=42 + i)
+            response = self.llm_client.call(messages, num_retries=1, seed=42 + i)
             try:
                 results = eval(response)
                 valid_answer = list(

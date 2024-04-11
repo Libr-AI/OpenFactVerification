@@ -2,20 +2,19 @@ from __future__ import annotations
 
 import json
 from factcheck.utils.prompt import VERIFY_PROMPT
-from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class ClaimVerify:
-    def __init__(self, model: str = "gpt-3.5-turbo"):
+    def __init__(self, llm_client=None):
         """Initialize the ClaimVerify class
 
         Args:
             model (str, optional): The version of the GPT model used for claim verification. Defaults to "gpt-3.5-turbo".
         """
-        self.chatgpt_client = GPTClient(model=model)
+        self.llm_client = llm_client
 
     def verify_claims(self, claims_evidences_dict):
         """Verify the factuality of the claims with respect to the given evidences
@@ -61,8 +60,8 @@ class ClaimVerify:
             _messages = [_message for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
             _indices = [_i for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
 
-            _message_list = self.chatgpt_client.construct_message_list(_messages)
-            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(_message_list)
+            _message_list = self.llm_client.construct_message_list(_messages)
+            _response_list = self.llm_client.multi_call(_message_list)
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _response_json = json.loads(_response)

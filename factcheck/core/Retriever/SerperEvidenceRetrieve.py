@@ -13,7 +13,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class SerperEvidenceRetrieve:
-    def __init__(self, model: str = "gpt-3.5-turbo") -> None:
+    def __init__(self, llm_client) -> None:
         """Initialize the SerperEvidenceRetrieve class
 
         Args:

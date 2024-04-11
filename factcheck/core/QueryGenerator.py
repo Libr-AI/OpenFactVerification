@@ -1,19 +1,18 @@
 from __future__ import annotations
 from factcheck.utils.prompt import QGEN_PROMPT
-from factcheck.utils.GPTClient import GPTClient
 from factcheck.config.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class QueryGenerator:
-    def __init__(self, model: str = "gpt-3.5-turbo") -> None:
+    def __init__(self, llm_client) -> None:
         """Initialize the QueryGenerator class
 
         Args:
             model (str, optional): The version of the GPT model used for query generation. Defaults to "gpt-3.5-turbo".
         """
-        self.chatgpt_client = GPTClient(model=model)
+        self.llm_client = llm_client
         self.max_query_per_claim = 5
 
     def generate_query(self, claims: list[str], generating_time: int = 3):
@@ -39,8 +38,8 @@ class QueryGenerator:
             _messages = [_message for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
             _indices = [_i for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
 
-            _message_list = self.chatgpt_client.construct_message_list(_messages)
-            _response_list = self.chatgpt_client.call_chatgpt_multiple_async(_message_list)
+            _message_list = self.llm_client.construct_message_list(_messages)
+            _response_list = self.llm_client.multi_call(_message_list)
 
             for _response, _index in zip(_response_list, _indices):
                 try:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 import tiktoken
 
+from factcheck.utils.LLMClient import ChatGPTClient
 from factcheck.core.Decompose import Decompose
 from factcheck.core.CheckWorthy import Checkworthy
 from factcheck.core.QueryGenerator import QueryGenerator
@@ -24,28 +25,30 @@ class FactCheck:
         evidence_retrieval_model: str = None,
         claim_verify_model: str = None,
     ):
+        self.llm_client = ChatGPTClient(model=default_model)
         # for gpt token count
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
-        # claim getter
-        self.decomposer = Decompose(model=default_model if decompose_model is None else decompose_model)
-        # checkworthy
-        self.checkworthy = Checkworthy(model=default_model if checkworthy_model is None else checkworthy_model)
+        # decompose text into claims
+        self.decomposer = Decompose(llm_client=self.llm_client if decompose_model is None else decompose_model)
+        # check if claims are checkworthy
+        self.checkworthy = Checkworthy(llm_client=self.llm_client if checkworthy_model is None else checkworthy_model)
+        # generate queries for claims
         self.query_generator = QueryGenerator(
-            model=(default_model if query_generator_model is None else query_generator_model)
+            llm_client=self.llm_client if query_generator_model is None else query_generator_model
         )
-        # evidences crawler
+        # retrieve evidences for claims
         self.evidence_crawler = SerperEvidenceRetrieve(
-            model=(default_model if evidence_retrieval_model is None else evidence_retrieval_model)
+            llm_client=self.llm_client if evidence_retrieval_model is None else evidence_retrieval_model
         )
-        # verity claim with evidences
-        self.claimverify = ClaimVerify(model=default_model if claim_verify_model is None else claim_verify_model)
+        # verify claims with evidences
+        self.claimverify = ClaimVerify(llm_client=self.llm_client if claim_verify_model is None else claim_verify_model)
         logger.info("===Sub-modules Init Finished===")
 
     def check_response(self, response: str):
         st_time = time.time()
         # step 1
-        claims = self.decomposer.getclaimsfromgpt(doc=response)
+        claims = self.decomposer.getclaims(doc=response)
         for i, claim in enumerate(claims):
             logger.info(f"== response claims {i}: {claim}")
 
