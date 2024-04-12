@@ -1,20 +1,21 @@
 from __future__ import annotations
 
 import json
-from factcheck.utils.prompt import VERIFY_PROMPT
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class ClaimVerify:
-    def __init__(self, llm_client=None):
+    def __init__(self, llm_client=None, prompt=None):
         """Initialize the ClaimVerify class
 
         Args:
-            model (str, optional): The version of the GPT model used for claim verification. Defaults to "gpt-3.5-turbo".
+            llm_client (BaseClient): The LLM client used for verifying the factuality of claims.
+            prompt (BasePrompt): The prompt used for verifying the factuality of claims.
         """
         self.llm_client = llm_client
+        self.prompt = prompt
 
     def verify_claims(self, claims_evidences_dict):
         """Verify the factuality of the claims with respect to the given evidences
@@ -53,7 +54,7 @@ class ClaimVerify:
         # construct user inputs with respect to each claim and its evidences
         messages_list = []
         for claim, evidences in zip(claims, evidence_lists):
-            user_input = VERIFY_PROMPT.format(claim=claim, evidence=evidences)
+            user_input = self.prompt.verify_prompt.format(claim=claim, evidence=evidences)
             messages_list.append(user_input)
 
         while (attempts < num_retries) and (None in factual_results):

@@ -1,33 +1,33 @@
-from typing import List
-from factcheck.utils.prompt import CHECKWORTHY_PROMPT
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class Checkworthy:
-    def __init__(self, llm_client):
+    def __init__(self, llm_client=None, prompt=None):
         """Initialize the Checkworthy class
 
         Args:
-            model (str, optional): The version of the GPT model used for checkworthy classification. Defaults to "gpt-3.5-turbo".
+            llm_client (BaseClient): The LLM client used for identifying checkworthiness of claims.
+            prompt (BasePrompt): The prompt used for identifying checkworthiness of claims.
         """
         self.llm_client = llm_client
+        self.prompt = prompt
 
-    def identify_checkworthiness(self, texts: List[str], num_retries: int = 3) -> List[str]:
+    def identify_checkworthiness(self, texts: list[str], num_retries: int = 3) -> list[str]:
         """Use GPT to identify whether candidate claims are worth fact checking. if gpt is unable to return correct checkworthy_claims, we assume all texts are checkworthy.
 
         Args:
-            texts (List[str]): a list of texts to identify whether they are worth fact checking
+            texts (list[str]): a list of texts to identify whether they are worth fact checking
             num_retries (int, optional): maximum attempts for GPT to identify checkworthy claims. Defaults to 3.
 
         Returns:
-            List[str]: a list of checkworthy claims, pairwise outputs
+            list[str]: a list of checkworthy claims, pairwise outputs
         """
         checkworthy_claims = texts
         # TODO: better handle checkworthiness
         joint_texts = "\n".join([str(i + 1) + ". " + j for i, j in enumerate(texts)])
-        user_input = CHECKWORTHY_PROMPT.format(texts=joint_texts)
+        user_input = self.prompt.checkworthy_prompt.format(texts=joint_texts)
         messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
             response = self.llm_client.call(messages, num_retries=1, seed=42 + i)

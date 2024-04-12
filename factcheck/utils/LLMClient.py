@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import time
 import asyncio
 from abc import abstractmethod
@@ -14,37 +12,35 @@ class BaseClient:
 
     @abstractmethod
     def _call(self, messages: str):
-        """Call the API."""
+        """Internal function to call the API."""
         pass
 
     @abstractmethod
-    def call(self, messages: str, num_retries):
-        """Call the API."""
+    def call(self, messages: str, num_retries) -> str:
+        """API call with retries."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def _async_call(self, messages: list) -> str:
+        """Internal function to call the API asynchronously."""
         pass
 
     @abstractmethod
-    def _async_call(self, messages: list):
-        """Call the API asynchronously."""
-        pass
+    def multi_call(self, messages_list: list[str]) -> list[str]:
+        """Multiple API calls simultaneously. It's better to support async."""
+        raise NotImplementedError
 
     @abstractmethod
-    def multi_call(self, messages_list: list[str]):
-        """Call the API multiple times."""
-        pass
-
-    @abstractmethod
-    def construct_message_list(
-        self,
-        prompt_list: list[str],
-    ):
-        """Construct a list of messages."""
-        pass
+    def construct_message_list(self, prompt_list: list[str]) -> list[str]:
+        """Construct a list of messages for the function self.multi_call."""
+        raise NotImplementedError
 
 
 class ClaudeClient(BaseClient):
     def __init__(self, model: str) -> None:
         super().__init__(model)
         from anthropic import Anthropic
+
         self.client = Anthropic(api_key=anthropic_dict["key"])
 
     def _call(self, messages: str, seed: int):
@@ -85,6 +81,7 @@ class ChatGPTClient(BaseClient):
     ):
         super().__init__(model)
         from openai import OpenAI
+
         self.max_traffic_bytes = max_traffic_bytes
         self.max_requests_per_minute = max_requests_per_minute
         self.request_window = request_window
@@ -141,7 +138,6 @@ class ChatGPTClient(BaseClient):
         return result
 
     def multi_call(self, messages_list, seed=42):
-        """Calls ChatGPT asynchronously for multiple prompts and returns a list of responses."""
         tasks = [self._async_call(messages=messages, seed=seed) for messages in messages_list]
         asyncio.set_event_loop(asyncio.SelectorEventLoop())
         loop = asyncio.get_event_loop()
@@ -153,7 +149,6 @@ class ChatGPTClient(BaseClient):
         current_time = time.time()
         while self.traffic_queue and self.traffic_queue[0][0] + self.request_window < current_time:
             self.total_traffic -= self.traffic_queue.popleft()[1]
-
 
     def construct_message_list(
         self,
@@ -177,6 +172,7 @@ def main():
     messages_list = client.construct_message_list(prompts)
     responses = client.multi_call(messages_list)
     print(responses)
+
 
 if __name__ == "__main__":
     main()

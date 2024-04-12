@@ -1,18 +1,19 @@
-from factcheck.utils.prompt import SENTENCES_TO_CLAIMS_PROMPT
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.CustomLogger import CustomLogger
 import nltk
 
 logger = CustomLogger(__name__).getlog()
 
 
 class Decompose:
-    def __init__(self, llm_client):
+    def __init__(self, llm_client=None, prompt=None):
         """Initialize the Decompose class
 
         Args:
-            model (str, optional): The version of the GPT model used for claim decomposition. Defaults to "gpt-3.5-turbo".
+            llm_client (BaseClient): The LLM client used for decomposing documents into claims.
+            prompt (BasePrompt): The prompt used for fact checking.
         """
         self.llm_client = llm_client
+        self.prompt = prompt
         self.doc2sent = self._nltk_doc2sent
 
     def _nltk_doc2sent(self, text: str):
@@ -39,8 +40,7 @@ class Decompose:
         Returns:
             list: a list of claims
         """
-        prompt_text = SENTENCES_TO_CLAIMS_PROMPT
-        user_input = prompt_text.format(doc=doc).strip()
+        user_input = self.prompt.decompose_prompt.format(doc=doc).strip()
 
         messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):

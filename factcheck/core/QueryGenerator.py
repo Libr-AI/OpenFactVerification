@@ -1,21 +1,21 @@
-from __future__ import annotations
-from factcheck.utils.prompt import QGEN_PROMPT
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class QueryGenerator:
-    def __init__(self, llm_client) -> None:
+    def __init__(self, llm_client=None, prompt=None):
         """Initialize the QueryGenerator class
 
         Args:
-            model (str, optional): The version of the GPT model used for query generation. Defaults to "gpt-3.5-turbo".
+            llm_client (BaseClient): The LLM client used for generating questions.
+            prompt (BasePrompt): The prompt used for generating questions.
         """
         self.llm_client = llm_client
+        self.prompt = prompt
         self.max_query_per_claim = 5
 
-    def generate_query(self, claims: list[str], generating_time: int = 3):
+    def generate_query(self, claims: list[str], generating_time: int = 3) -> dict[str, list[str]]:
         """Generate questions for the given claims
 
         Args:
@@ -31,7 +31,7 @@ class QueryGenerator:
         # construct messages
         messages_list = []
         for claim in claims:
-            user_input = QGEN_PROMPT.format(claim=claim)
+            user_input = self.prompt.qgen_prompt.format(claim=claim)
             messages_list.append(user_input)
 
         while (attempts < generating_time) and ([] in generated_questions):

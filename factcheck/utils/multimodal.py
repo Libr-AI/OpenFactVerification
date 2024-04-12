@@ -3,7 +3,7 @@ from openai import OpenAI
 import cv2
 import base64
 import requests
-from factcheck.config.CustomLogger import CustomLogger
+from .CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 

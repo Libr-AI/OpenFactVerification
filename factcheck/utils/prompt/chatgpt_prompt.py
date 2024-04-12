@@ -1,5 +1,21 @@
-# Used prompts
-CHECKWORTHY_PROMPT = """
+decompose_prompt = """
+Your task is to decompose the text into atomic claims.
+The answer should be a JSON with a single key "claims", with the value of a list of strings, where each string should be a context-independent claim, representing one fact.
+Note that:
+1. Each claim should be concise (less than 15 words) and self-contained.
+2. Avoid vague references like 'he', 'she', 'it', 'this', 'the company', 'the man' and using complete names.
+3. Generate at least one claim for each single sentence in the texts.
+
+For example,
+Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
+Output:
+{{"claims": ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]}}
+
+Text: {doc}
+Output:
+"""
+
+checkworthy_prompt = """
 Your task is to evaluate each provided statement to determine if it presents information whose factuality can be objectively verified by humans, irrespective of the statement's current accuracy. Consider the following guidelines:
 1. Opinions versus Facts: Distinguish between opinions, which are subjective and not verifiable, and statements that assert factual information, even if broad or general. Focus on whether there's a factual claim that can be investigated.
 2. Clarity and Specificity: Statements must have clear and specific references to be verifiable (e.g., "he is a professor" is not verifiable without knowing who "he" is).
@@ -24,7 +40,28 @@ For these statements:
 The output should be:
 """
 
-VERIFY_PROMPT = """
+qgen_prompt = """Given a claim, your task is to create minimum number of questions need to be check to verify the correctness of the claim. Output in JSON format with a single key "Questions", the value is a list of questions. For example:
+
+Claim: Your nose switches back and forth between nostrils. When you sleep, you switch about every 45 minutes. This is to prevent a buildup of mucus. It’s called the nasal cycle.
+Output: {{"Questions": ["Does your nose switch between nostrils?", "How often does your nostrils switch?", "Why does your nostril switch?", "What is nasal cycle?"]}}
+
+Claim: The Stanford Prison Experiment was conducted in the basement of Encina Hall, Stanford’s psychology building.
+Output:
+{{"Question":["Where was Stanford Prison Experiment was conducted?"]}}
+
+Claim: The Havel-Hakimi algorithm is an algorithm for converting the adjacency matrix of a graph into its adjacency list. It is named after Vaclav Havel and Samih Hakimi.
+Output:
+{{"Questions":["What does Havel-Hakimi algorithm do?", "Who are Havel-Hakimi algorithm named after?"]}}
+
+Claim: Social work is a profession that is based in the philosophical tradition of humanism. It is an intellectual discipline that has its roots in the 1800s.
+Output:
+{{"Questions":["What philosophical tradition is social work based on?", "What year does social work have its root in?"]}}
+
+Claim: {claim}
+Output:
+"""
+
+verify_prompt = """
 Your task is to evaluate the accuracy of a provided statement using the accompanying evidence. Carefully review the evidence, noting that it may vary in detail and sometimes present conflicting information. Your judgment should be informed by this evidence, taking into account its relevance and reliability.
 
 Keep in mind that a lack of detail in the evidence does not necessarily indicate that the statement is inaccurate. When assessing the statement's factuality, distinguish between errors and areas where the evidence supports the statement.
@@ -69,40 +106,8 @@ Input
 Output:
 """
 
-SENTENCES_TO_CLAIMS_PROMPT = """
-Your task is to decompose the text into atomic claims.
-The answer should be a JSON with a single key "claims", with the value of a list of strings, where each string should be a context-independent claim, representing one fact.
-Note that:
-1. Each claim should be concise (less than 15 words) and self-contained.
-2. Avoid vague references like 'he', 'she', 'it', 'this', 'the company', 'the man' and using complete names.
-3. Generate at least one claim for each single sentence in the texts.
-
-For example,
-Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
-Output:
-{{"claims": ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]}}
-
-Text: {doc}
-Output:
-"""
-
-QGEN_PROMPT = """Given a claim, your task is to create minimum number of questions need to be check to verify the correctness of the claim. Output in JSON format with a single key "Questions", the value is a list of questions. For example:
-
-Claim: Your nose switches back and forth between nostrils. When you sleep, you switch about every 45 minutes. This is to prevent a buildup of mucus. It’s called the nasal cycle.
-Output: {{"Questions": ["Does your nose switch between nostrils?", "How often does your nostrils switch?", "Why does your nostril switch?", "What is nasal cycle?"]}}
-
-Claim: The Stanford Prison Experiment was conducted in the basement of Encina Hall, Stanford’s psychology building.
-Output:
-{{"Question":["Where was Stanford Prison Experiment was conducted?"]}}
-
-Claim: The Havel-Hakimi algorithm is an algorithm for converting the adjacency matrix of a graph into its adjacency list. It is named after Vaclav Havel and Samih Hakimi.
-Output:
-{{"Questions":["What does Havel-Hakimi algorithm do?", "Who are Havel-Hakimi algorithm named after?"]}}
-
-Claim: Social work is a profession that is based in the philosophical tradition of humanism. It is an intellectual discipline that has its roots in the 1800s.
-Output:
-{{"Questions":["What philosophical tradition is social work based on?", "What year does social work have its root in?"]}}
-
-Claim: {claim}
-Output:
-"""
+class ChatGPTPrompt():
+    decompose_prompt = decompose_prompt
+    checkworthy_prompt = checkworthy_prompt
+    qgen_prompt = qgen_prompt
+    verify_prompt = verify_prompt

@@ -1,16 +1,11 @@
-from __future__ import annotations
-
 import time
 import tiktoken
 
 from factcheck.utils.LLMClient import ChatGPTClient
-from factcheck.core.Decompose import Decompose
-from factcheck.core.CheckWorthy import Checkworthy
-from factcheck.core.QueryGenerator import QueryGenerator
-from factcheck.core.Retriever import SerperEvidenceRetrieve
-from factcheck.core.ClaimVerify import ClaimVerify
+from factcheck.utils.prompt import BasePrompt, ChatGPTPrompt
+from factcheck.utils.CustomLogger import CustomLogger
+from factcheck.core import Decompose, Checkworthy, QueryGenerator, SerperEvidenceRetrieve, ClaimVerify
 
-from factcheck.config.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
@@ -19,30 +14,33 @@ class FactCheck:
     def __init__(
         self,
         default_model: str = "gpt-4-0125-preview",
+        prompt: str = "chatgpt_prompt",
         decompose_model: str = None,
         checkworthy_model: str = None,
         query_generator_model: str = None,
         evidence_retrieval_model: str = None,
         claim_verify_model: str = None,
     ):
-        self.llm_client = ChatGPTClient(model=default_model)
-        # for gpt token count
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
-        # decompose text into claims
-        self.decomposer = Decompose(llm_client=self.llm_client if decompose_model is None else decompose_model)
-        # check if claims are checkworthy
-        self.checkworthy = Checkworthy(llm_client=self.llm_client if checkworthy_model is None else checkworthy_model)
-        # generate queries for claims
-        self.query_generator = QueryGenerator(
-            llm_client=self.llm_client if query_generator_model is None else query_generator_model
+        self.prompt = ChatGPTPrompt() if prompt == "chatgpt_prompt" else BasePrompt()  # TODO: better handling of prompt
+
+        # llms for each step (sub-module)
+        self.decompose_model = ChatGPTClient(model=default_model) if decompose_model is None else decompose_model
+        self.checkworthy_model = ChatGPTClient(model=default_model) if checkworthy_model is None else checkworthy_model
+        self.query_generator_model = (
+            ChatGPTClient(model=default_model) if query_generator_model is None else query_generator_model
         )
-        # retrieve evidences for claims
-        self.evidence_crawler = SerperEvidenceRetrieve(
-            llm_client=self.llm_client if evidence_retrieval_model is None else evidence_retrieval_model
-        )
-        # verify claims with evidences
-        self.claimverify = ClaimVerify(llm_client=self.llm_client if claim_verify_model is None else claim_verify_model)
+        self.evidence_retrieval_model = evidence_retrieval_model  # no LLM for this step
+        self.claim_verify_model = ChatGPTClient(model=default_model) if claim_verify_model is None else claim_verify_model
+
+        # sub-modules
+        self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
+        self.checkworthy = Checkworthy(llm_client=self.checkworthy_model, prompt=self.prompt)
+        self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
+        self.evidence_crawler = SerperEvidenceRetrieve()
+        self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
+
         logger.info("===Sub-modules Init Finished===")
 
     def check_response(self, response: str):

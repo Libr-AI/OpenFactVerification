@@ -1,4 +1,4 @@
-from factcheck.core.FactCheck import FactCheck
+from factcheck import FactCheck
 from factcheck.utils.multimodal import modal_normalization
 import argparse
 import json

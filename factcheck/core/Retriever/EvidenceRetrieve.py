@@ -1,27 +1,15 @@
-from __future__ import annotations
-from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import ProcessPoolExecutor
-from concurrent.futures import as_completed
 import os
 from copy import deepcopy
 from factcheck.utils.web_util import parse_response, crawl_web
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.CustomLogger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class EvidenceRetrieve:
-    def __init__(self, model: str = "gpt-3.5-turbo") -> None:
-        """Initialize the EvidenceRetrieve class.
-        sentences_per_passage: Number of sentences for each passage.
-        sliding_distance: Sliding distance over the text. Allows the passages to have overlap. The sliding distance cannot be greater than the window size.
-
-        Args:
-            model (str, optional): The version of the GPT model used for evidence retrieval. Defaults to "gpt-3.5-turbo".
-
-        Returns:
-            None
-        """
+    def __init__(self):
+        """Initialize the EvidenceRetrieve class."""
         import spacy
 
         self.tokenizer = spacy.load("en_core_web_sm", disable=["ner", "tagger", "lemmatizer"])
