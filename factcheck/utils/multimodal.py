@@ -1,4 +1,3 @@
-from factcheck.config.secret_dict import openai_dict
 from openai import OpenAI
 import cv2
 import base64
@@ -8,15 +7,15 @@ from .CustomLogger import CustomLogger
 logger = CustomLogger(__name__).getlog()
 
 
-def voice2text(input):
+def voice2text(input, openai_key):
     # voice to input
-    client = OpenAI(api_key=openai_dict["key"])
+    client = OpenAI(api_key=openai_key)
     audio_file = open(input, "rb")
     transcription = client.audio.transcriptions.create(model="whisper-1", file=audio_file)
     return transcription.text
 
 
-def image2text(input):
+def image2text(input, openai_key):
     # Function to encode the image
     def encode_image(image_path):
         with open(image_path, "rb") as image_file:
@@ -27,7 +26,7 @@ def image2text(input):
 
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {openai_dict['key']}",
+        "Authorization": f"Bearer {openai_key}",
     }
 
     payload = {
@@ -51,7 +50,7 @@ def image2text(input):
     return caption.json()["choices"][0]["message"]["content"]
 
 
-def video2text(input):
+def video2text(input, openai_key):
     # Read the video and convert it to pictures
     video = cv2.VideoCapture(input)
 
@@ -66,7 +65,7 @@ def video2text(input):
     video.release()
 
     # Process the pictures with GPT4-V
-    client = OpenAI(api_key=openai_dict["key"])
+    client = OpenAI(api_key=openai_key)
     PROMPT_MESSAGES = [
         {
             "role": "user",
@@ -86,7 +85,7 @@ def video2text(input):
     return result.choices[0].message.content
 
 
-def modal_normalization(modal="text", input=None):
+def modal_normalization(modal="text", input=None, openai_key=None):
     logger.info(f"== Processing: Modal: {modal}, Input: {input}")
     if modal == "string":
         response = str(input)
@@ -94,11 +93,11 @@ def modal_normalization(modal="text", input=None):
         with open(input, "r") as f:
             response = f.read()
     elif modal == "speech":
-        response = voice2text(input)
+        response = voice2text(input, openai_key)
     elif modal == "image":
-        response = image2text(input)
+        response = image2text(input, openai_key)
     elif modal == "video":
-        response = video2text(input)
+        response = video2text(input, openai_key)
     else:
         raise NotImplementedError
     logger.info(f"== Processed: Modal: {modal}, Input: {input}")

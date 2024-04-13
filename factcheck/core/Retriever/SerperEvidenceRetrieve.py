@@ -4,7 +4,6 @@ import requests
 import os
 import re
 import bs4
-from factcheck.config.secret_dict import serper_dict
 from factcheck.utils.CustomLogger import CustomLogger
 from factcheck.utils.web_util import crawl_web
 
@@ -12,9 +11,10 @@ logger = CustomLogger(__name__).getlog()
 
 
 class SerperEvidenceRetrieve:
-    def __init__(self):
+    def __init__(self, api_config: str = None):
         """Initialize the SerperEvidenceRetrieve class"""
         self.lang = "en"
+        self.serper_key = api_config["SERPER_API_KEY"]
 
     def retrieve_evidence(self, claim_query_dict, top_k: int = 5, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given claims
@@ -178,7 +178,7 @@ class SerperEvidenceRetrieve:
         url = "https://google.serper.dev/search"
 
         headers = {
-            "X-API-KEY": serper_dict.get("key"),
+            "X-API-KEY": self.serper_key,
             "Content-Type": "application/json",
         }
 
