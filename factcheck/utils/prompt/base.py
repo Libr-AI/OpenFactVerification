@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class BasePrompt:
     decompose_prompt: str = None

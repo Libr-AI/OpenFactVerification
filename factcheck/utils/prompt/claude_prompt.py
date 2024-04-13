@@ -27,7 +27,7 @@ For example, given these statements:
 2. He is a professor at MBZUAI.
 3. Obama is the president of the UK.
 
-The expected output is:
+The expected output is a JSON:
 {{
     "Gary Smith is a distinguished professor of economics.": "Yes (The statement contains verifiable factual information about Gary Smith's professional title and field.)",
     "He is a professor at MBZUAI.": "No (The statement cannot be verified due to the lack of clear reference to who 'he' is.)",
@@ -37,20 +37,20 @@ The expected output is:
 For these statements:
 {texts}
 
-The output should be:
+The output should be a JSON:
 """
 
 qgen_prompt = """Given a claim, your task is to create minimum number of questions need to be check to verify the correctness of the claim. Output in JSON format with a single key "Questions", the value is a list of questions. For example:
 
 Claim: Your nose switches back and forth between nostrils. When you sleep, you switch about every 45 minutes. This is to prevent a buildup of mucus. It’s called the nasal cycle.
-Output: {{"Questions": ["Does your nose switch between nostrils?", "How often does your nostrils switch?", "Why does your nostril switch?", "What is nasal cycle?"]}}
+JSON Output: {{"Questions": ["Does your nose switch between nostrils?", "How often does your nostrils switch?", "Why does your nostril switch?", "What is nasal cycle?"]}}
 
 Claim: The Stanford Prison Experiment was conducted in the basement of Encina Hall, Stanford’s psychology building.
-Output:
+JSON Output:
 {{"Question":["Where was Stanford Prison Experiment was conducted?"]}}
 
 Claim: The Havel-Hakimi algorithm is an algorithm for converting the adjacency matrix of a graph into its adjacency list. It is named after Vaclav Havel and Samih Hakimi.
-Output:
+JSON Output:
 {{"Questions":["What does Havel-Hakimi algorithm do?", "Who are Havel-Hakimi algorithm named after?"]}}
 
 Claim: Social work is a profession that is based in the philosophical tradition of humanism. It is an intellectual discipline that has its roots in the 1800s.
@@ -58,7 +58,7 @@ Output:
 {{"Questions":["What philosophical tradition is social work based on?", "What year does social work have its root in?"]}}
 
 Claim: {claim}
-Output:
+JSON Output:
 """
 
 verify_prompt = """
@@ -77,7 +77,7 @@ Input:
 [text]: MBZUAI is located in Abu Dhabi, United Arab Emirates.
 [evidence]: Where is MBZUAI located?\nAnswer: Masdar City - Abu Dhabi - United Arab Emirates
 
-Output:
+JSON Output:
 {{
     "reasoning": "The evidence confirms that MBZUAI is located in Masdar City, Abu Dhabi, United Arab Emirates, so the statement is factually correct",
     "error": none,
@@ -90,7 +90,7 @@ Input:
 [text]: Copper reacts with ferrous sulfate (FeSO4).
 [evidence]: Copper is less reactive metal. It has positive value of standard reduction potential. Metal with high standard reduction potential can not displace other metal with low standard reduction potential values. Hence copper can not displace iron from ferrous sulphate solution. So no change will take place.
 
-Output:
+JSON Output:
 {{
     "reasoning": "The evidence provided confirms that copper cannot displace iron from ferrous sulphate solution, and no change will take place.",
     "error": "Copper does not react with ferrous sulfate as stated in the text.",
@@ -103,11 +103,11 @@ Input
 [text]: {claim}
 [evidences]: {evidence}
 
-Output:
+JSON Output:
 """
 
 
-class ChatGPTPrompt:
+class ClaudePrompt:
     decompose_prompt = decompose_prompt
     checkworthy_prompt = checkworthy_prompt
     qgen_prompt = qgen_prompt
