@@ -1,41 +1,38 @@
-import os
 import time
-import asyncio
-from abc import abstractmethod
-from collections import deque
-from functools import partial
+from anthropic import Anthropic
 
-from openai import OpenAI
-
-from factcheck.config.secret_dict import openai_dict, anthropic_dict
 from factcheck.utils.llmclient.base import BaseClient
 
 
 class ClaudeClient(BaseClient):
-    def __init__(self, model: str, api_config: dict) -> None:
-        super().__init__(model)
-        from anthropic import Anthropic
+    def __init__(
+        self,
+        model: str = "claude-3-opus-20240229",
+        api_config: dict = None,
+        max_requests_per_minute=200,
+        request_window=60,
+    ):
+        super().__init__(model, api_config, max_requests_per_minute, request_window)
+        self.client = Anthropic(api_key=self.api_config["ANTHROPIC_API_KEY"])
 
-        self.client = Anthropic(api_key=anthropic_dict["key"])
+    def _call(self, messages: str, **kwargs):
+        response = self.client.messages.create(
+            messages=messages,
+            model=self.model,
+            max_tokens=2048,
+        )
+        return response.content[0].text
 
-    def _call(self, messages: str, seed: int):
-        response = ""
-        try:
-            response = self.client.messages.create(
-                messages=messages,
-                model=self.model,
-                max_tokens=2048,
-            )
-        except Exception as e:
-            print(f"Error Claude call: {e}")
-            pass
-        return response
+    def get_request_length(self, messages):
+        return 1
 
     def construct_message_list(
         self,
         prompt_list: list[str],
-        system_role: str = "You are a helpful assistant designed to output JSON.",
+        system_role: str = None,
     ):
+        if system_role is None:
+            Warning("system_role is not used in this case")
         # system role is not used in this case
         messages_list = list()
         for prompt in prompt_list:

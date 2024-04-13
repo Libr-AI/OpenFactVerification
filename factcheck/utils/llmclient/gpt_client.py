@@ -1,13 +1,6 @@
-import os
 import time
-import asyncio
-from abc import abstractmethod
-from collections import deque
-from functools import partial
 
 from openai import OpenAI
-
-from factcheck.config.secret_dict import openai_dict, anthropic_dict
 from factcheck.utils.llmclient.base import BaseClient
 
 
@@ -33,23 +26,6 @@ class GPTClient(BaseClient):
             messages=messages,
         )
         r = response.choices[0].message.content
-        return r
-
-    def call(self, messages: str, num_retries=3, waiting_time=1, **kwargs):
-        seed = kwargs.get("seed", 42)
-        assert type(seed) is int, "Seed must be an integer."
-
-        r = ""
-        for _ in range(num_retries):
-            try:
-                r = self._call(messages[0], seed=seed)
-                break
-            except Exception as e:
-                print(f"Error ChatGPT call: {e} Retrying...")
-                time.sleep(waiting_time)
-
-        if r == "":
-            raise ValueError("Failed to get response from ChatGPT.")
         return r
 
     def get_request_length(self, messages):
