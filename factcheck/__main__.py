@@ -189,7 +189,7 @@ def check(args):
     api_config = load_yaml(args.api_config)
 
     factcheck = FactCheck(
-        default_model=args.model, api_config=api_config, prompt=args.prompt
+        default_model=args.model, api_config=api_config, prompt=args.prompt, retriever=args.retriever
     )
 
     content = modal_normalization(args.modal, args.input)
@@ -201,6 +201,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
     parser.add_argument("--prompt", type=str, default="chatgpt_prompt")
+    parser.add_argument("--retriever", type=str, default="serper")
     parser.add_argument("--modal", type=str, default="text")
     parser.add_argument("--input", type=str, default="demo_data/text.txt")
     parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")

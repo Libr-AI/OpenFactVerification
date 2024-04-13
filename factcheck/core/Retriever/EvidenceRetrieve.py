@@ -8,7 +8,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class EvidenceRetrieve:
-    def __init__(self):
+    def __init__(self, api_config: dict = None):
         """Initialize the EvidenceRetrieve class."""
         import spacy
 

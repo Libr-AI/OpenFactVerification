@@ -7,8 +7,8 @@ logger = CustomLogger(__name__).getlog()
 
 
 class GoogleEvidenceRetrieve(EvidenceRetrieve):
-    def __init__(self) -> None:
-        super(GoogleEvidenceRetrieve, self).__init__()
+    def __init__(self, api_config: dict = None) -> None:
+        super(GoogleEvidenceRetrieve, self).__init__(api_config)
         self.num_web_pages = 10
 
     def _get_query_urls(self, questions: list[str]):
