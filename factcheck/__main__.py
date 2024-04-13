@@ -14,7 +14,7 @@ from factcheck.core import (
     Decompose,
     Checkworthy,
     QueryGenerator,
-    SerperEvidenceRetrieve,
+    retriever_mapper,
     ClaimVerify,
 )
 
@@ -26,6 +26,7 @@ class FactCheck:
         self,
         default_model: str = "gpt-4-0125-preview",
         prompt: str = "chatgpt_prompt",
+        retriever: str = "serper",
         decompose_model: str = None,
         checkworthy_model: str = None,
         query_generator_model: str = None,
@@ -53,7 +54,7 @@ class FactCheck:
             _model_name = default_model if _model_name is None else _model_name
             print(f"== Init {key} with model: {_model_name}")
             LLMClient = client_mapper(_model_name)
-            setattr(self, key, LLMClient(model=_model_name, api_config=api_config))
+            setattr(self, key, LLMClient(model=_model_name, api_config=self.api_config))
 
         # sub-modules
         self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
@@ -63,7 +64,11 @@ class FactCheck:
         self.query_generator = QueryGenerator(
             llm_client=self.query_generator_model, prompt=self.prompt
         )
-        self.evidence_crawler = SerperEvidenceRetrieve()
+
+        self.evidence_crawler = retriever_mapper(retriever_name=retriever)(
+            api_config=self.api_config
+        )
+
         self.claimverify = ClaimVerify(
             llm_client=self.claim_verify_model, prompt=self.prompt
         )
