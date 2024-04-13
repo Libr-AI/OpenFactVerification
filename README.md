@@ -127,6 +127,11 @@ python -m factcheck --modal string --input "MBZUAI is the first AI university in
 python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --retriever google
 ```
 
+### Custom Prompts
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --prompt demo_data/sample_prompt.yaml
+```
+
 ## Ready for More?
 
 💪 **Join Our Journey to Innovation with the Supporter Edition**
