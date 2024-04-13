@@ -69,7 +69,7 @@ class ClaimVerify:
                     assert all(k in _response_json for k in ["reasoning", "error", "correction", "factuality"])
                     factual_results[_index] = _response_json
                 except:  # noqa: E722
-                    logger.info(f"Warning: ChatGPT response parse fail, retry {attempts}.")
+                    logger.info(f"Warning: LLM response parse fail, retry {attempts}.")
             attempts += 1
 
         _template_results = {

@@ -54,8 +54,8 @@ class Decompose:
                 if isinstance(claims, list) and len(claims) > 0:
                     return claims
             except Exception as e:
-                logger.error(f"Parse chatgpt result error {e}, response is: {response}")
-                logger.error(f"Parse chatgpt result error, prompt is: {messages}")
+                logger.error(f"Parse LLM response error {e}, response is: {response}")
+                logger.error(f"Parse LLM response error, prompt is: {messages}")
 
         logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
         claims = self.doc2sent(doc)

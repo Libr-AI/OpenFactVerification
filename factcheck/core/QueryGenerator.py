@@ -46,7 +46,7 @@ class QueryGenerator:
                     _questions = eval(_response)["Questions"]
                     generated_questions[_index] = _questions
                 except:  # noqa: E722
-                    logger.info(f"Warning: ChatGPT response parse fail, retry {attempts}.")
+                    logger.info(f"Warning: LLM response parse fail, retry {attempts}.")
             attempts += 1
 
         # ensure that each claim has at least one question which is the claim itself

@@ -44,6 +44,6 @@ class Checkworthy:
                 assert len(valid_answer) == len(results)
                 break
             except Exception as e:
-                logger.error(f"====== Error: {e}, the response is: {response}")
+                logger.error(f"====== Error: {e}, the LLM response is: {response}")
                 logger.error(f"====== Our input is: {messages}")
         return checkworthy_claims, results
