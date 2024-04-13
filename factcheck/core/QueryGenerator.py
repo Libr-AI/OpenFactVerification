@@ -15,9 +15,7 @@ class QueryGenerator:
         self.prompt = prompt
         self.max_query_per_claim = max_query_per_claim
 
-    def generate_query(
-        self, claims: list[str], generating_time: int = 3, prompt: str = None
-    ) -> dict[str, list[str]]:
+    def generate_query(self, claims: list[str], generating_time: int = 3, prompt: str = None) -> dict[str, list[str]]:
         """Generate questions for the given claims
 
         Args:
@@ -40,16 +38,8 @@ class QueryGenerator:
             messages_list.append(user_input)
 
         while (attempts < generating_time) and ([] in generated_questions):
-            _messages = [
-                _message
-                for _i, _message in enumerate(messages_list)
-                if generated_questions[_i] == []
-            ]
-            _indices = [
-                _i
-                for _i, _message in enumerate(messages_list)
-                if generated_questions[_i] == []
-            ]
+            _messages = [_message for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
+            _indices = [_i for _i, _message in enumerate(messages_list) if generated_questions[_i] == []]
 
             _message_list = self.llm_client.construct_message_list(_messages)
             _response_list = self.llm_client.multi_call(_message_list)

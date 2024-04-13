@@ -60,12 +60,10 @@ class BaseClient:
         """Calls ChatGPT asynchronously, tracks traffic, and enforces rate limits."""
         while len(self.traffic_queue) >= self.max_requests_per_minute:
             await asyncio.sleep(1)
-            self.expire_old_traffic()
+            self._expire_old_traffic()
 
         loop = asyncio.get_running_loop()
-        response = await loop.run_in_executor(
-            None, partial(self._call, messages, **kwargs)
-        )
+        response = await loop.run_in_executor(None, partial(self._call, messages, **kwargs))
 
         self.total_traffic += self.get_request_length(messages)
         self.traffic_queue.append((time.time(), self.get_request_length(messages)))
@@ -73,19 +71,14 @@ class BaseClient:
         return response
 
     def multi_call(self, messages_list, **kwargs):
-        tasks = [
-            self._async_call(messages=messages, **kwargs) for messages in messages_list
-        ]
+        tasks = [self._async_call(messages=messages, **kwargs) for messages in messages_list]
         asyncio.set_event_loop(asyncio.SelectorEventLoop())
         loop = asyncio.get_event_loop()
         responses = loop.run_until_complete(asyncio.gather(*tasks))
         return responses
 
-    def expire_old_traffic(self):
+    def _expire_old_traffic(self):
         """Expires traffic older than the request window."""
         current_time = time.time()
-        while (
-            self.traffic_queue
-            and self.traffic_queue[0][0] + self.request_window < current_time
-        ):
+        while self.traffic_queue and self.traffic_queue[0][0] + self.request_window < current_time:
             self.total_traffic -= self.traffic_queue.popleft()[1]

@@ -53,20 +53,12 @@ class FactCheck:
 
         # sub-modules
         self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
-        self.checkworthy = Checkworthy(
-            llm_client=self.checkworthy_model, prompt=self.prompt
-        )
-        self.query_generator = QueryGenerator(
-            llm_client=self.query_generator_model, prompt=self.prompt
-        )
+        self.checkworthy = Checkworthy(llm_client=self.checkworthy_model, prompt=self.prompt)
+        self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
 
-        self.evidence_crawler = retriever_mapper(retriever_name=retriever)(
-            api_config=self.api_config
-        )
+        self.evidence_crawler = retriever_mapper(retriever_name=retriever)(api_config=self.api_config)
 
-        self.claimverify = ClaimVerify(
-            llm_client=self.claim_verify_model, prompt=self.prompt
-        )
+        self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
 
         logger.info("===Sub-modules Init Finished===")
 
@@ -116,27 +108,21 @@ class FactCheck:
             return api_data_dict
 
         # step 3
-        claim_query_dict = self.query_generator.generate_query(
-            claims=checkworthy_claims
-        )
+        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 
         step123_time = time.time()
 
         # step 4
-        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(
-            claim_query_dict=claim_query_dict
-        )
+        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(claim_query_dict=claim_query_dict)
         for claim, evidences in claim_evidence_dict.items():
             logger.info(f"== Claim: {claim}")
             logger.info(f"== Evidence: {evidences}\n")
         step4_time = time.time()
 
         # step 5
-        claim_verify_dict = self.claimverify.verify_claims(
-            claims_evidences_dict=claim_evidence_dict
-        )
+        claim_verify_dict = self.claimverify.verify_claims(claims_evidences_dict=claim_evidence_dict)
         step5_time = time.time()
         logger.info(
             f"== State: Done! \n Total time: {step5_time-st_time:.2f}s. (create claims:{step123_time-st_time:.2f}s |||  retrieve:{step4_time-step123_time:.2f}s ||| verify:{step5_time-step4_time:.2f}s)"

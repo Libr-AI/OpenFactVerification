@@ -17,9 +17,7 @@ class ClaimVerify:
         self.llm_client = llm_client
         self.prompt = prompt
 
-    def verify_claims(
-        self, claims_evidences_dict, prompt: str = None
-    ) -> dict[str, any]:
+    def verify_claims(self, claims_evidences_dict, prompt: str = None) -> dict[str, any]:
         """Verify the factuality of the claims with respect to the given evidences
 
         Args:
@@ -63,35 +61,22 @@ class ClaimVerify:
         messages_list = []
         for claim, evidences in zip(claims, evidence_lists):
             if prompt is None:
-                user_input = self.prompt.verify_prompt.format(
-                    claim=claim, evidence=evidences
-                )
+                user_input = self.prompt.verify_prompt.format(claim=claim, evidence=evidences)
             else:
                 user_input = prompt.format(claim=claim, evidence=evidences)
 
             messages_list.append(user_input)
 
         while (attempts < num_retries) and (None in factual_results):
-            _messages = [
-                _message
-                for _i, _message in enumerate(messages_list)
-                if factual_results[_i] is None
-            ]
-            _indices = [
-                _i
-                for _i, _message in enumerate(messages_list)
-                if factual_results[_i] is None
-            ]
+            _messages = [_message for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
+            _indices = [_i for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
 
             _message_list = self.llm_client.construct_message_list(_messages)
             _response_list = self.llm_client.multi_call(_message_list)
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _response_json = json.loads(_response)
-                    assert all(
-                        k in _response_json
-                        for k in ["reasoning", "error", "correction", "factuality"]
-                    )
+                    assert all(k in _response_json for k in ["reasoning", "error", "correction", "factuality"])
                     factual_results[_index] = _response_json
                 except:  # noqa: E722
                     logger.info(f"Warning: LLM response parse fail, retry {attempts}.")
@@ -104,8 +89,5 @@ class ClaimVerify:
             "factuality": False,
         }
         # if cannot get correct response within num_retries times.
-        factual_results = [
-            _item if _item is not None else _template_results
-            for _item in factual_results
-        ]
+        factual_results = [_item if _item is not None else _template_results for _item in factual_results]
         return factual_results

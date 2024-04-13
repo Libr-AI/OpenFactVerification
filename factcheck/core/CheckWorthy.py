@@ -14,9 +14,7 @@ class Checkworthy:
         self.llm_client = llm_client
         self.prompt = prompt
 
-    def identify_checkworthiness(
-        self, texts: list[str], num_retries: int = 3, prompt: str = None
-    ) -> list[str]:
+    def identify_checkworthiness(self, texts: list[str], num_retries: int = 3, prompt: str = None) -> list[str]:
         """Use GPT to identify whether candidate claims are worth fact checking. if gpt is unable to return correct checkworthy_claims, we assume all texts are checkworthy.
 
         Args:
@@ -46,9 +44,7 @@ class Checkworthy:
                         results.items(),
                     )
                 )
-                checkworthy_claims = list(
-                    filter(lambda x: x[1].startswith("Yes"), results.items())
-                )
+                checkworthy_claims = list(filter(lambda x: x[1].startswith("Yes"), results.items()))
                 checkworthy_claims = list(map(lambda x: x[0], checkworthy_claims))
                 assert len(valid_answer) == len(results)
                 break

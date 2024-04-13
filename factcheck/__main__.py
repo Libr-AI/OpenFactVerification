@@ -21,9 +21,7 @@ def check(args):
         print(f"Error loading api config: {e}")
         api_config = {}
 
-    factcheck = FactCheck(
-        default_model=args.model, api_config=api_config, prompt=args.prompt, retriever=args.retriever
-    )
+    factcheck = FactCheck(default_model=args.model, api_config=api_config, prompt=args.prompt, retriever=args.retriever)
 
     content = modal_normalization(args.modal, args.input)
     res = factcheck.check_response(content)
