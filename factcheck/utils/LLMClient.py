@@ -1,3 +1,4 @@
+import os
 import time
 import asyncio
 from abc import abstractmethod
@@ -7,8 +8,9 @@ from functools import partial
 
 
 class BaseClient:
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, api_config: dict) -> None:
         self.model = model
+        self.api_config = api_config
 
     @abstractmethod
     def _call(self, messages: str):
@@ -37,7 +39,7 @@ class BaseClient:
 
 
 class ClaudeClient(BaseClient):
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, api_config: dict) -> None:
         super().__init__(model)
         from anthropic import Anthropic
 
@@ -75,6 +77,7 @@ class ChatGPTClient(BaseClient):
     def __init__(
         self,
         model: str = None,
+        api_config: dict = None,
         max_requests_per_minute=200,
         request_window=60,
     ):

@@ -2,12 +2,20 @@ import json
 import time
 import tiktoken
 import argparse
+import os
 
 from factcheck.utils.LLMClient import ChatGPTClient
 from factcheck.utils.prompt import BasePrompt, ChatGPTPrompt
 from factcheck.utils.CustomLogger import CustomLogger
 from factcheck.utils.multimodal import modal_normalization
-from factcheck.core import Decompose, Checkworthy, QueryGenerator, SerperEvidenceRetrieve, ClaimVerify
+from factcheck.config.load_config import load_yaml
+from factcheck.core import (
+    Decompose,
+    Checkworthy,
+    QueryGenerator,
+    SerperEvidenceRetrieve,
+    ClaimVerify,
+)
 
 logger = CustomLogger(__name__).getlog()
 
@@ -22,28 +30,73 @@ class FactCheck:
         query_generator_model: str = None,
         evidence_retrieval_model: str = None,
         claim_verify_model: str = None,
+        api_config: dict = None,
     ):
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
-        self.prompt = ChatGPTPrompt() if prompt == "chatgpt_prompt" else BasePrompt()  # TODO: better handling of prompt
+        self.prompt = (
+            ChatGPTPrompt() if prompt == "chatgpt_prompt" else BasePrompt()
+        )  # TODO: better handling of prompt
+
+        self.load_config(api_config=api_config)
 
         # llms for each step (sub-module)
-        self.decompose_model = ChatGPTClient(model=default_model) if decompose_model is None else decompose_model
-        self.checkworthy_model = ChatGPTClient(model=default_model) if checkworthy_model is None else checkworthy_model
-        self.query_generator_model = (
-            ChatGPTClient(model=default_model) if query_generator_model is None else query_generator_model
+        self.decompose_model = ChatGPTClient(
+            model=default_model if decompose_model is None else decompose_model
+        )
+        self.checkworthy_model = ChatGPTClient(
+            model=default_model if checkworthy_model is None else checkworthy_model
+        )
+        self.query_generator_model = ChatGPTClient(
+            model=(
+                default_model
+                if query_generator_model is None
+                else query_generator_model
+            )
         )
         self.evidence_retrieval_model = evidence_retrieval_model  # no LLM for this step
-        self.claim_verify_model = ChatGPTClient(model=default_model) if claim_verify_model is None else claim_verify_model
+        self.claim_verify_model = ChatGPTClient(
+            model=default_model if claim_verify_model is None else claim_verify_model
+        )
 
         # sub-modules
         self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
-        self.checkworthy = Checkworthy(llm_client=self.checkworthy_model, prompt=self.prompt)
-        self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
+        self.checkworthy = Checkworthy(
+            llm_client=self.checkworthy_model, prompt=self.prompt
+        )
+        self.query_generator = QueryGenerator(
+            llm_client=self.query_generator_model, prompt=self.prompt
+        )
         self.evidence_crawler = SerperEvidenceRetrieve()
-        self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
+        self.claimverify = ClaimVerify(
+            llm_client=self.claim_verify_model, prompt=self.prompt
+        )
 
         logger.info("===Sub-modules Init Finished===")
+
+    def load_config(self, api_config: dict) -> None:
+        if api_config is None:
+            api_config = dict()
+        assert type(api_config) is dict, "api_config must be a dictionary."
+
+        self.api_config = api_config
+
+        # Load API keys from environment variables or config file, environment variables take precedence
+        self.SERPER_API_KEY = os.environ.get(
+            "SERPER_API_KEY", api_config.get("SERPER_API_KEY", None)
+        )
+        self.OPENAI_API_KEY = os.environ.get(
+            "OPENAI_API_KEY", api_config.get("OPENAI_API_KEY", None)
+        )
+        self.ANTHROPIC_API_KEY = os.environ.get(
+            "ANTHROPIC_API_KEY", api_config.get("ANTHROPIC_API_KEY", None)
+        )
+        self.LOCAL_API_KEY = os.environ.get(
+            "LOCAL_API_KEY", api_config.get("LOCAL_API_KEY", None)
+        )
+        self.LOCAL_API_URL = os.environ.get(
+            "LOCAL_API_URL", api_config.get("LOCAL_API_URL", None)
+        )
 
     def check_response(self, response: str):
         st_time = time.time()
@@ -87,21 +140,27 @@ class FactCheck:
             return api_data_dict
 
         # step 3
-        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
+        claim_query_dict = self.query_generator.generate_query(
+            claims=checkworthy_claims
+        )
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 
         step123_time = time.time()
 
         # step 4
-        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(claim_query_dict=claim_query_dict)
+        claim_evidence_dict = self.evidence_crawler.retrieve_evidence(
+            claim_query_dict=claim_query_dict
+        )
         for claim, evidences in claim_evidence_dict.items():
             logger.info(f"== Claim: {claim}")
             logger.info(f"== Evidence: {evidences}\n")
         step4_time = time.time()
 
         # step 5
-        claim_verify_dict = self.claimverify.verify_claims(claims_evidences_dict=claim_evidence_dict)
+        claim_verify_dict = self.claimverify.verify_claims(
+            claims_evidences_dict=claim_evidence_dict
+        )
         step5_time = time.time()
         logger.info(
             f"== State: Done! \n Total time: {step5_time-st_time:.2f}s. (create claims:{step123_time-st_time:.2f}s |||  retrieve:{step4_time-step123_time:.2f}s ||| verify:{step5_time-step4_time:.2f}s)"
@@ -137,7 +196,6 @@ class FactCheck:
         return api_data_dict
 
 
-
 def check(model: str, modal: str, input: str):
     """factcheck
 
@@ -152,13 +210,15 @@ def check(model: str, modal: str, input: str):
     print(json.dumps(res["step_info"], indent=4))
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
     parser.add_argument("--modal", type=str, default="text")
     parser.add_argument("--input", type=str, default="demo_data/text.txt")
+    parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")
     args = parser.parse_args()
 
-    check(args.model, args.modal, args.input)
+    print(args.model, args.modal, args.input, args.api_config)
+    # check(args.model, args.modal, args.input)
 
+    print(load_yaml(args.api_config))
