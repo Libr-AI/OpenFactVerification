@@ -86,13 +86,15 @@ The main interface of the Fact-check Pipeline is located in `factcheck/core/Fact
 
 Example usage:
 ```python
-from factcheck.core.FactCheck import check_response
+from factcheck import FactCheck
+
+factcheck_instance = FactCheck()
 
 # Example text
 text = "Your text here"
 
 # Run the fact-check pipeline
-results = check_response(text)
+results = factcheck_instance.check_response(text)
 print(results)
 ```
 
