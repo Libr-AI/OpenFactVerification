@@ -85,7 +85,39 @@
             bottom: 0;
             border: #a9bee3 solid 2px;
         }
+
+        #timer {
+            margin-left: 80%;
+            width: 18%;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+        }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#Button').click(function(event){
+                // Prevent the default form submission momentarily
+                // event.preventDefault();
+                
+                // Submit the form
+                $(this).closest('form').submit();
+
+                // Disable the button
+                $(this).prop('disabled', true);
+
+                 // Start an elapsed time timer
+                var timeElapsed = 0;
+                $('#timer').text('Time elapsed: ' + timeElapsed + ' seconds');
+                var timerId = setInterval(function(){
+                    timeElapsed++;
+                    $('#timer').text('Time elapsed: ' + timeElapsed + ' seconds');
+                }, 1000);
+
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -102,8 +134,9 @@
             <label for="response">Please enter the model's response:</label><br>
             <textarea id="response" name="response" rows="4" cols="50"
                 placeholder="Enter fact to check..."></textarea><br>
-            <button type="submit">Submit</button>
+            <button id="Button" type="submit">Submit</button>
         </form>
+        <p id="timer"></p>
     </main>
 
     <footer>

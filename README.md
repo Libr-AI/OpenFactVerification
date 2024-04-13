@@ -100,7 +100,7 @@ print(results)
 
 Web app usage:
 ```bash
-python webapp.py
+python webapp.py --api_config demo_data/api_config.yaml
 ```
 <p align="center"><img src="./fig/web_input.png"/></p>
 <p align="center"><img src="./fig/web_result.png"/></p>

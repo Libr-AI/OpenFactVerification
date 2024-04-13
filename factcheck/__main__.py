@@ -2,7 +2,7 @@ import json
 import argparse
 
 from factcheck.utils.multimodal import modal_normalization
-from factcheck.config.load_config import load_yaml
+from factcheck.utils.utils import load_yaml
 from factcheck import FactCheck
 
 
@@ -15,7 +15,11 @@ def check(args):
         input (str): input content or path to the file
     """
     # Load API config from yaml file
-    api_config = load_yaml(args.api_config)
+    try:
+        api_config = load_yaml(args.api_config)
+    except Exception as e:
+        print(f"Error loading api config: {e}")
+        api_config = {}
 
     factcheck = FactCheck(
         default_model=args.model, api_config=api_config, prompt=args.prompt, retriever=args.retriever
