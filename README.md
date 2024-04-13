@@ -115,6 +115,18 @@ We welcome contributions from the community! If you'd like to contribute, please
 5. Open a pull request.
 
 
+## Customize Your Experience
+
+### Custom Models
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/api_config.yaml --model claude-3-opus-20240229 --prompt claude_prompt
+```
+
+### Custom Evidence Retrieval
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --retriever google
+```
+
 ## Ready for More?
 
 💪 **Join Our Journey to Innovation with the Supporter Edition**
