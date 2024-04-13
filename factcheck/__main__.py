@@ -4,8 +4,8 @@ import tiktoken
 import argparse
 import os
 
-from factcheck.utils.llmclient import model2client
-from factcheck.utils.prompt import BasePrompt, ChatGPTPrompt
+from factcheck.utils.llmclient import client_mapper
+from factcheck.utils.prompt import prompt_mapper
 from factcheck.utils.CustomLogger import CustomLogger
 from factcheck.utils.multimodal import modal_normalization
 from factcheck.config.load_config import load_yaml
@@ -35,9 +35,7 @@ class FactCheck:
     ):
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
-        self.prompt = (
-            ChatGPTPrompt() if prompt == "chatgpt_prompt" else BasePrompt()
-        )  # TODO: better handling of prompt
+        self.prompt = prompt_mapper(prompt_name=prompt)
 
         # load configures for API
         self.load_config(api_config=api_config)
@@ -54,7 +52,7 @@ class FactCheck:
         for key, _model_name in step_models.items():
             _model_name = default_model if _model_name is None else _model_name
             print(f"== Init {key} with model: {_model_name}")
-            LLMClient = model2client(_model_name)
+            LLMClient = client_mapper(_model_name)
             setattr(self, key, LLMClient(model=_model_name, api_config=api_config))
 
         # sub-modules
@@ -174,7 +172,7 @@ class FactCheck:
         return api_data_dict
 
 
-def check(model: str, modal: str, input: str, api_config: str):
+def check(args):
     """factcheck
 
     Args:
@@ -183,11 +181,13 @@ def check(model: str, modal: str, input: str, api_config: str):
         input (str): input content or path to the file
     """
     # Load API config from yaml file
-    api_config = load_yaml(api_config)
+    api_config = load_yaml(args.api_config)
 
-    factcheck = FactCheck(default_model=model, api_config=api_config)
+    factcheck = FactCheck(
+        default_model=args.model, api_config=api_config, prompt=args.prompt
+    )
 
-    content = modal_normalization(modal, input)
+    content = modal_normalization(args.modal, args.input)
     res = factcheck.check_response(content)
     print(json.dumps(res["step_info"], indent=4))
 
@@ -195,9 +195,10 @@ def check(model: str, modal: str, input: str, api_config: str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
+    parser.add_argument("--prompt", type=str, default="chatgpt_prompt")
     parser.add_argument("--modal", type=str, default="text")
     parser.add_argument("--input", type=str, default="demo_data/text.txt")
     parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")
     args = parser.parse_args()
 
-    check(args.model, args.modal, args.input, args.api_config)
+    check(args)
