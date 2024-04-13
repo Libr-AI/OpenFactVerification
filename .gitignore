@@ -178,3 +178,6 @@ data_map.txt
 .gptcache_data_map.txt
 dump.rdb
 faiss.index
+
+# test data
+demo_data/test_api_config.yaml
