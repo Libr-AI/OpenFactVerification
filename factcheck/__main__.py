@@ -4,11 +4,12 @@ import tiktoken
 import argparse
 import os
 
-from factcheck.utils.LLMClient import ChatGPTClient
+from factcheck.utils.llmclient import model2client
 from factcheck.utils.prompt import BasePrompt, ChatGPTPrompt
 from factcheck.utils.CustomLogger import CustomLogger
 from factcheck.utils.multimodal import modal_normalization
 from factcheck.config.load_config import load_yaml
+from factcheck.config.api_config import load_api_config
 from factcheck.core import (
     Decompose,
     Checkworthy,
@@ -38,26 +39,23 @@ class FactCheck:
             ChatGPTPrompt() if prompt == "chatgpt_prompt" else BasePrompt()
         )  # TODO: better handling of prompt
 
+        # load configures for API
         self.load_config(api_config=api_config)
 
         # llms for each step (sub-module)
-        self.decompose_model = ChatGPTClient(
-            model=default_model if decompose_model is None else decompose_model
-        )
-        self.checkworthy_model = ChatGPTClient(
-            model=default_model if checkworthy_model is None else checkworthy_model
-        )
-        self.query_generator_model = ChatGPTClient(
-            model=(
-                default_model
-                if query_generator_model is None
-                else query_generator_model
-            )
-        )
-        self.evidence_retrieval_model = evidence_retrieval_model  # no LLM for this step
-        self.claim_verify_model = ChatGPTClient(
-            model=default_model if claim_verify_model is None else claim_verify_model
-        )
+        step_models = {
+            "decompose_model": decompose_model,
+            "checkworthy_model": checkworthy_model,
+            "query_generator_model": query_generator_model,
+            "evidence_retrieval_model": evidence_retrieval_model,
+            "claim_verify_model": claim_verify_model,
+        }
+
+        for key, _model_name in step_models.items():
+            _model_name = default_model if _model_name is None else _model_name
+            print(f"== Init {key} with model: {_model_name}")
+            LLMClient = model2client(_model_name)
+            setattr(self, key, LLMClient(model=_model_name, api_config=api_config))
 
         # sub-modules
         self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
@@ -75,28 +73,8 @@ class FactCheck:
         logger.info("===Sub-modules Init Finished===")
 
     def load_config(self, api_config: dict) -> None:
-        if api_config is None:
-            api_config = dict()
-        assert type(api_config) is dict, "api_config must be a dictionary."
-
-        self.api_config = api_config
-
-        # Load API keys from environment variables or config file, environment variables take precedence
-        self.SERPER_API_KEY = os.environ.get(
-            "SERPER_API_KEY", api_config.get("SERPER_API_KEY", None)
-        )
-        self.OPENAI_API_KEY = os.environ.get(
-            "OPENAI_API_KEY", api_config.get("OPENAI_API_KEY", None)
-        )
-        self.ANTHROPIC_API_KEY = os.environ.get(
-            "ANTHROPIC_API_KEY", api_config.get("ANTHROPIC_API_KEY", None)
-        )
-        self.LOCAL_API_KEY = os.environ.get(
-            "LOCAL_API_KEY", api_config.get("LOCAL_API_KEY", None)
-        )
-        self.LOCAL_API_URL = os.environ.get(
-            "LOCAL_API_URL", api_config.get("LOCAL_API_URL", None)
-        )
+        # Load API config
+        self.api_config = load_api_config(api_config)
 
     def check_response(self, response: str):
         st_time = time.time()
@@ -196,7 +174,7 @@ class FactCheck:
         return api_data_dict
 
 
-def check(model: str, modal: str, input: str):
+def check(model: str, modal: str, input: str, api_config: str):
     """factcheck
 
     Args:
@@ -204,7 +182,11 @@ def check(model: str, modal: str, input: str):
         modal (str): input type, supported types are str, text file, speech, image, and video
         input (str): input content or path to the file
     """
-    factcheck = FactCheck(default_model=model)
+    # Load API config from yaml file
+    api_config = load_yaml(api_config)
+
+    factcheck = FactCheck(default_model=model, api_config=api_config)
+
     content = modal_normalization(modal, input)
     res = factcheck.check_response(content)
     print(json.dumps(res["step_info"], indent=4))
@@ -218,7 +200,4 @@ if __name__ == "__main__":
     parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")
     args = parser.parse_args()
 
-    print(args.model, args.modal, args.input, args.api_config)
-    # check(args.model, args.modal, args.input)
-
-    print(load_yaml(args.api_config))
+    check(args.model, args.modal, args.input, args.api_config)
