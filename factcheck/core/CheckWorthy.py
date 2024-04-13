@@ -4,7 +4,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class Checkworthy:
-    def __init__(self, llm_client=None, prompt=None):
+    def __init__(self, llm_client, prompt):
         """Initialize the Checkworthy class
 
         Args:
@@ -14,7 +14,9 @@ class Checkworthy:
         self.llm_client = llm_client
         self.prompt = prompt
 
-    def identify_checkworthiness(self, texts: list[str], num_retries: int = 3) -> list[str]:
+    def identify_checkworthiness(
+        self, texts: list[str], num_retries: int = 3, prompt: str = None
+    ) -> list[str]:
         """Use GPT to identify whether candidate claims are worth fact checking. if gpt is unable to return correct checkworthy_claims, we assume all texts are checkworthy.
 
         Args:
@@ -27,7 +29,12 @@ class Checkworthy:
         checkworthy_claims = texts
         # TODO: better handle checkworthiness
         joint_texts = "\n".join([str(i + 1) + ". " + j for i, j in enumerate(texts)])
-        user_input = self.prompt.checkworthy_prompt.format(texts=joint_texts)
+
+        if prompt is None:
+            user_input = self.prompt.checkworthy_prompt.format(texts=joint_texts)
+        else:
+            user_input = prompt.format(texts=joint_texts)
+
         messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
             response = self.llm_client.call(messages, num_retries=1, seed=42 + i)
@@ -39,7 +46,9 @@ class Checkworthy:
                         results.items(),
                     )
                 )
-                checkworthy_claims = list(filter(lambda x: x[1].startswith("Yes"), results.items()))
+                checkworthy_claims = list(
+                    filter(lambda x: x[1].startswith("Yes"), results.items())
+                )
                 checkworthy_claims = list(map(lambda x: x[0], checkworthy_claims))
                 assert len(valid_answer) == len(results)
                 break

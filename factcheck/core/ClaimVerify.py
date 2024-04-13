@@ -7,7 +7,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class ClaimVerify:
-    def __init__(self, llm_client=None, prompt=None):
+    def __init__(self, llm_client, prompt):
         """Initialize the ClaimVerify class
 
         Args:
@@ -17,7 +17,9 @@ class ClaimVerify:
         self.llm_client = llm_client
         self.prompt = prompt
 
-    def verify_claims(self, claims_evidences_dict):
+    def verify_claims(
+        self, claims_evidences_dict, prompt: str = None
+    ) -> dict[str, any]:
         """Verify the factuality of the claims with respect to the given evidences
 
         Args:
@@ -30,7 +32,7 @@ class ClaimVerify:
 
         claims = list(claims_evidences_dict.keys())
         evidence_lists = list(claims_evidences_dict.values())
-        results = self._verify_all_claims(claims, evidence_lists)
+        results = self._verify_all_claims(claims, evidence_lists, prompt=prompt)
 
         for claim, evidence_list, result in zip(claims, evidence_lists, results):
             result["claim"] = claim
@@ -38,7 +40,13 @@ class ClaimVerify:
             claim_detail_dict[claim] = result
         return claim_detail_dict
 
-    def _verify_all_claims(self, claims: list[str], evidence_lists: list[list], num_retries=3) -> list[dict[str, any]]:
+    def _verify_all_claims(
+        self,
+        claims: list[str],
+        evidence_lists: list[list],
+        num_retries=3,
+        prompt: str = None,
+    ) -> list[dict[str, any]]:
         """Verify the factuality of the claims with respect to the given evidences
 
         Args:
@@ -54,19 +62,36 @@ class ClaimVerify:
         # construct user inputs with respect to each claim and its evidences
         messages_list = []
         for claim, evidences in zip(claims, evidence_lists):
-            user_input = self.prompt.verify_prompt.format(claim=claim, evidence=evidences)
+            if prompt is None:
+                user_input = self.prompt.verify_prompt.format(
+                    claim=claim, evidence=evidences
+                )
+            else:
+                user_input = prompt.format(claim=claim, evidence=evidences)
+
             messages_list.append(user_input)
 
         while (attempts < num_retries) and (None in factual_results):
-            _messages = [_message for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
-            _indices = [_i for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
+            _messages = [
+                _message
+                for _i, _message in enumerate(messages_list)
+                if factual_results[_i] is None
+            ]
+            _indices = [
+                _i
+                for _i, _message in enumerate(messages_list)
+                if factual_results[_i] is None
+            ]
 
             _message_list = self.llm_client.construct_message_list(_messages)
             _response_list = self.llm_client.multi_call(_message_list)
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _response_json = json.loads(_response)
-                    assert all(k in _response_json for k in ["reasoning", "error", "correction", "factuality"])
+                    assert all(
+                        k in _response_json
+                        for k in ["reasoning", "error", "correction", "factuality"]
+                    )
                     factual_results[_index] = _response_json
                 except:  # noqa: E722
                     logger.info(f"Warning: LLM response parse fail, retry {attempts}.")
@@ -79,5 +104,8 @@ class ClaimVerify:
             "factuality": False,
         }
         # if cannot get correct response within num_retries times.
-        factual_results = [_item if _item is not None else _template_results for _item in factual_results]
+        factual_results = [
+            _item if _item is not None else _template_results
+            for _item in factual_results
+        ]
         return factual_results

@@ -5,7 +5,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class Decompose:
-    def __init__(self, llm_client=None, prompt=None):
+    def __init__(self, llm_client, prompt):
         """Initialize the Decompose class
 
         Args:
@@ -30,7 +30,7 @@ class Decompose:
         sentence_list = [s.strip() for s in sentences if len(s.strip()) >= 3]
         return sentence_list
 
-    def getclaims(self, doc: str, num_retries: int = 3):
+    def getclaims(self, doc: str, num_retries: int = 3, prompt: str = None):
         """Use GPT to decompose a document into claims
 
         Args:
@@ -40,7 +40,10 @@ class Decompose:
         Returns:
             list: a list of claims
         """
-        user_input = self.prompt.decompose_prompt.format(doc=doc).strip()
+        if prompt is None:
+            user_input = self.prompt.decompose_prompt.format(doc=doc).strip()
+        else:
+            user_input = prompt.format(doc=doc).strip()
 
         messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
@@ -57,6 +60,8 @@ class Decompose:
                 logger.error(f"Parse LLM response error {e}, response is: {response}")
                 logger.error(f"Parse LLM response error, prompt is: {messages}")
 
-        logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
+        logger.info(
+            "It does not output a list of sentences correctly, return self.doc2sent_tool split results."
+        )
         claims = self.doc2sent(doc)
         return claims
