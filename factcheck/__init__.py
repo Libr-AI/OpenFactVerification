@@ -1,1 +1,0 @@
-from .FactCheck import FactCheck

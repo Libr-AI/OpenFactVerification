@@ -62,15 +62,15 @@ export ANTHROPIC_API_KEY=... # this is required only if you want to replace open
 To test the project, you can run the `factcheck.py` script:
 ```bash
 # String
-python factcheck.py --modal string --input "MBZUAI is the first AI university in the world"
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world"
 # Text
-python factcheck.py --modal text --input demo_data/text.txt
+python -m factcheck --modal text --input demo_data/text.txt
 # Speech
-python factcheck.py --modal speech --input demo_data/speech.mp3
+python -m factcheck --modal speech --input demo_data/speech.mp3
 # Image
-python factcheck.py --modal image --input demo_data/image.webp
+python -m factcheck --modal image --input demo_data/image.webp
 # Video
-python factcheck.py --modal video --input demo_data/video.m4v
+python -m factcheck --modal video --input demo_data/video.m4v
 ```
 
 ## Usage

@@ -75,14 +75,12 @@ class ChatGPTClient(BaseClient):
     def __init__(
         self,
         model: str = None,
-        max_traffic_bytes=1000000,
         max_requests_per_minute=200,
         request_window=60,
     ):
         super().__init__(model)
         from openai import OpenAI
 
-        self.max_traffic_bytes = max_traffic_bytes
         self.max_requests_per_minute = max_requests_per_minute
         self.request_window = request_window
         self.traffic_queue = deque()
