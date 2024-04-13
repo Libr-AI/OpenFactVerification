@@ -9,7 +9,6 @@ from factcheck.utils.CustomLogger import CustomLogger
 from factcheck.utils.multimodal import modal_normalization
 from factcheck.core import Decompose, Checkworthy, QueryGenerator, SerperEvidenceRetrieve, ClaimVerify
 
-
 logger = CustomLogger(__name__).getlog()
 
 

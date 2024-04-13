@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from factcheck.core.FactCheck import FactCheck
+from factcheck.__main__ import FactCheck
 
 app = Flask(__name__)
 

@@ -91,29 +91,27 @@ class ChatGPTClient(BaseClient):
         self.model = model
 
     def _call(self, messages: str, seed: int):
-        response = ""
-        try:
-            response = self.client.chat.completions.create(
-                response_format={"type": "json_object"},
-                seed=seed,
-                model=self.model,
-                messages=messages,
-            )
-        except Exception as e:
-            print(f"Error ChatGPT call: {e}")
-            pass
-        return response
+        response = self.client.chat.completions.create(
+            response_format={"type": "json_object"},
+            seed=seed,
+            model=self.model,
+            messages=messages,
+        )
+        r = response.choices[0].message.content
+        return r
 
     def call(self, messages: str, num_retries=3, waiting_time=1, seed=42):
         r = ""
         for _ in range(num_retries):
-            response = self._call(messages[0], seed=seed)
             try:
-                r = response.choices[0].message.content
+                r = self._call(messages[0], seed=seed)
                 break
             except Exception as e:
-                print(f"{e}. Retrying...")
+                print(f"Error ChatGPT call: {e} Retrying...")
                 time.sleep(waiting_time)
+
+        if r == "":
+            raise ValueError("Failed to get response from ChatGPT.")
         return r
 
     def get_request_length(self, messages):
@@ -132,8 +130,7 @@ class ChatGPTClient(BaseClient):
         self.total_traffic += self.get_request_length(messages)
         self.traffic_queue.append((time.time(), self.get_request_length(messages)))
 
-        result = response.choices[0].message.content
-        return result
+        return response
 
     def multi_call(self, messages_list, seed=42):
         tasks = [self._async_call(messages=messages, seed=seed) for messages in messages_list]
