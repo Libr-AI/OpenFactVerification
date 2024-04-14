@@ -4,7 +4,7 @@ import tiktoken
 from factcheck.utils.llmclient import client_mapper
 from factcheck.utils.prompt import prompt_mapper
 from factcheck.utils.CustomLogger import CustomLogger
-from factcheck.config.api_config import load_api_config
+from factcheck.utils.config.api_config import load_api_config
 from factcheck.core import (
     Decompose,
     Checkworthy,

@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--retriever", type=str, default="serper")
     parser.add_argument("--modal", type=str, default="text")
     parser.add_argument("--input", type=str, default="demo_data/text.txt")
-    parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")
+    parser.add_argument("--api_config", type=str, default="factcheck/config/api_config.yaml")
     args = parser.parse_args()
 
     check(args)
