@@ -1,4 +1,4 @@
-from factcheck.utils.CustomLogger import CustomLogger
+from factcheck.utils.logger import CustomLogger
 import nltk
 
 logger = CustomLogger(__name__).getlog()

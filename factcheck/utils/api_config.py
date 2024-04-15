@@ -26,5 +26,4 @@ def load_api_config(api_config: dict = None):
         merged_config[key] = api_config.get(key, None)
         if merged_config[key] is None:
             merged_config[key] = os.environ.get(key, None)
-
     return merged_config

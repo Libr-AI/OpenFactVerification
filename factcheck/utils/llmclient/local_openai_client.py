@@ -1,22 +1,25 @@
 import time
-
 import openai
 from openai import OpenAI
-from factcheck.utils.llmclient.base import BaseClient
+from .base import BaseClient
 
 
-class LocalClient(BaseClient):
+class LocalOpenAIClient(BaseClient):
+    """Support Local host LLM chatbot with OpenAI API.
+    see https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md for example usage.
+    """
+
     def __init__(
         self,
-        model: str = "gpt-4-turbo",
+        model: str = "",
         api_config: dict = None,
         max_requests_per_minute=200,
         request_window=60,
     ):
         super().__init__(model, api_config, max_requests_per_minute, request_window)
 
-        openai.api_key = "EMPTY"
-        openai.base_url = "http://localhost:8000/v1/"
+        openai.api_key = api_config["LOCAL_API_KEY"]
+        openai.base_url = api_config["LOCAL_API_URL"]
 
     def _call(self, messages: str, **kwargs):
         seed = kwargs.get("seed", 42)  # default seed is 42

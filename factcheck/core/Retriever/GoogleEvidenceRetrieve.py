@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from factcheck.utils.web_util import common_web_request, crawl_google_web
-from factcheck.core.Retriever.EvidenceRetrieve import EvidenceRetrieve
-from factcheck.utils.CustomLogger import CustomLogger
+from .EvidenceRetrieve import EvidenceRetrieve
+from factcheck.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 

@@ -1,10 +1,10 @@
 import time
 import tiktoken
 
-from factcheck.utils.llmclient import client_mapper
+from factcheck.utils.llmclient import CLIENTS, model2client
 from factcheck.utils.prompt import prompt_mapper
-from factcheck.utils.CustomLogger import CustomLogger
-from factcheck.utils.config.api_config import load_api_config
+from factcheck.utils.logger import CustomLogger
+from factcheck.utils.api_config import load_api_config
 from factcheck.core import (
     Decompose,
     Checkworthy,
@@ -20,6 +20,7 @@ class FactCheck:
     def __init__(
         self,
         default_model: str = "gpt-4-0125-preview",
+        client: str = None,
         prompt: str = "chatgpt_prompt",
         retriever: str = "serper",
         decompose_model: str = None,
@@ -48,16 +49,19 @@ class FactCheck:
         for key, _model_name in step_models.items():
             _model_name = default_model if _model_name is None else _model_name
             print(f"== Init {key} with model: {_model_name}")
-            LLMClient = client_mapper(_model_name)
+            if client is not None:
+                logger.info(f"== Use specified client: {client}")
+                LLMClient = CLIENTS[client]
+            else:
+                logger.info("== Client is not specified, use model2client() to get the default llm client.")
+                LLMClient = model2client(_model_name)
             setattr(self, key, LLMClient(model=_model_name, api_config=self.api_config))
 
         # sub-modules
         self.decomposer = Decompose(llm_client=self.decompose_model, prompt=self.prompt)
         self.checkworthy = Checkworthy(llm_client=self.checkworthy_model, prompt=self.prompt)
         self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
-
         self.evidence_crawler = retriever_mapper(retriever_name=retriever)(api_config=self.api_config)
-
         self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
 
         logger.info("===Sub-modules Init Finished===")

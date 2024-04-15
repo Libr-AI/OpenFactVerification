@@ -1,5 +1,5 @@
-from factcheck.core.Retriever.GoogleEvidenceRetrieve import GoogleEvidenceRetrieve
-from factcheck.core.Retriever.SerperEvidenceRetrieve import SerperEvidenceRetrieve
+from .GoogleEvidenceRetrieve import GoogleEvidenceRetrieve
+from .SerperEvidenceRetrieve import SerperEvidenceRetrieve
 
 retriever_map = {
     "google": GoogleEvidenceRetrieve,

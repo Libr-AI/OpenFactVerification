@@ -4,7 +4,7 @@ import requests
 import os
 import re
 import bs4
-from factcheck.utils.CustomLogger import CustomLogger
+from factcheck.utils.logger import CustomLogger
 from factcheck.utils.web_util import crawl_web
 
 logger = CustomLogger(__name__).getlog()

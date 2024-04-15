@@ -2,7 +2,7 @@ from concurrent.futures import ProcessPoolExecutor
 import os
 from copy import deepcopy
 from factcheck.utils.web_util import parse_response, crawl_web
-from factcheck.utils.CustomLogger import CustomLogger
+from factcheck.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 

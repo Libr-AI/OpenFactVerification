@@ -1,7 +1,6 @@
 import time
-
 from openai import OpenAI
-from factcheck.utils.llmclient.base import BaseClient
+from .base import BaseClient
 
 
 class GPTClient(BaseClient):

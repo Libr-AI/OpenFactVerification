@@ -2,7 +2,7 @@ from openai import OpenAI
 import cv2
 import base64
 import requests
-from .CustomLogger import CustomLogger
+from .logger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 

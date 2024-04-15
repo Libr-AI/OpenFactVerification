@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from factcheck.utils.CustomLogger import CustomLogger
+from factcheck.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 

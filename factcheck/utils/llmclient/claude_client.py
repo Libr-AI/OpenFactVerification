@@ -1,7 +1,6 @@
 import time
 from anthropic import Anthropic
-
-from factcheck.utils.llmclient.base import BaseClient
+from .base import BaseClient
 
 
 class ClaudeClient(BaseClient):
