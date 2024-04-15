@@ -43,16 +43,23 @@ pip install -r requirements.txt
 
 ### Configure API keys
 
-```
-cp factcheck/config/secret_dict.template factcheck/config/secret_dict.py
-```
-You can choose to export essential api key to the environment, or configure it in `factcheck/config/secret_dict.py`.
+You can choose to export essential api key to the environment
 
 - Example: Export essential api key to the environment
 ```bash
 export SERPER_API_KEY=... # this is required in evidence retrieval if serper being used
 export OPENAI_API_KEY=... # this is required in all tasks
 export ANTHROPIC_API_KEY=... # this is required only if you want to replace openai with anthropic
+export LOCAL_API_KEY=... # this is required only if you want to use local LLM
+export LOCAL_API_URL=... # this is required only if you want to use local LLM
+```
+
+Alternatively, you can save the api information in a yaml file with the same key names as the environment variables and pass the path to the yaml file as an argument to the `check_response` method.
+
+See `demo_data\api_config.yaml` as an example of the api configuration file.
+- Example: Pass the path to the api configuration file
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/api_config.yaml
 ```
 
 ### Test
@@ -62,15 +69,15 @@ export ANTHROPIC_API_KEY=... # this is required only if you want to replace open
 To test the project, you can run the `factcheck.py` script:
 ```bash
 # String
-python factcheck.py --modal string --input "MBZUAI is the first AI university in the world"
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world"
 # Text
-python factcheck.py --modal text --input demo_data/text.txt
+python -m factcheck --modal text --input demo_data/text.txt
 # Speech
-python factcheck.py --modal speech --input demo_data/speech.mp3
+python -m factcheck --modal speech --input demo_data/speech.mp3
 # Image
-python factcheck.py --modal image --input demo_data/image.webp
+python -m factcheck --modal image --input demo_data/image.webp
 # Video
-python factcheck.py --modal video --input demo_data/video.m4v
+python -m factcheck --modal video --input demo_data/video.m4v
 ```
 
 ## Usage
@@ -79,19 +86,21 @@ The main interface of the Fact-check Pipeline is located in `factcheck/core/Fact
 
 Example usage:
 ```python
-from factcheck.core.FactCheck import check_response
+from factcheck import FactCheck
+
+factcheck_instance = FactCheck()
 
 # Example text
 text = "Your text here"
 
 # Run the fact-check pipeline
-results = check_response(text)
+results = factcheck_instance.check_response(text)
 print(results)
 ```
 
 Web app usage:
 ```bash
-python webapp.py
+python webapp.py --api_config demo_data/api_config.yaml
 ```
 <p align="center"><img src="./fig/web_input.png"/></p>
 <p align="center"><img src="./fig/web_result.png"/></p>
@@ -105,6 +114,23 @@ We welcome contributions from the community! If you'd like to contribute, please
 4. Push to the branch (`git push origin feature/AmazingFeature`).
 5. Open a pull request.
 
+
+## Customize Your Experience
+
+### Custom Models
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/api_config.yaml --model claude-3-opus-20240229 --prompt claude_prompt
+```
+
+### Custom Evidence Retrieval
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --retriever google
+```
+
+### Custom Prompts
+```bash
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --prompt demo_data/sample_prompt.yaml
+```
 
 ## Ready for More?
 

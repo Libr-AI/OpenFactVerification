@@ -1,16 +1,14 @@
-from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from factcheck.utils.web_util import common_web_request, crawl_google_web
-from factcheck.core.Retriever.EvidenceRetrieve import EvidenceRetrieve
-
-from factcheck.config.CustomLogger import CustomLogger
+from .EvidenceRetrieve import EvidenceRetrieve
+from factcheck.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__).getlog()
 
 
 class GoogleEvidenceRetrieve(EvidenceRetrieve):
-    def __init__(self) -> None:
-        super(GoogleEvidenceRetrieve, self).__init__()
+    def __init__(self, api_config: dict = None) -> None:
+        super(GoogleEvidenceRetrieve, self).__init__(api_config)
         self.num_web_pages = 10
 
     def _get_query_urls(self, questions: list[str]):

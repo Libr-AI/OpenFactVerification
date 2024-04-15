@@ -1,20 +1,19 @@
-from factcheck.utils.prompt import SENTENCES_TO_CLAIMS_PROMPT
-from factcheck.utils.GPTClient import GPTClient
-from factcheck.config.CustomLogger import CustomLogger
+from factcheck.utils.logger import CustomLogger
 import nltk
 
 logger = CustomLogger(__name__).getlog()
 
 
 class Decompose:
-    def __init__(self, model="gpt-3.5-turbo"):
+    def __init__(self, llm_client, prompt):
         """Initialize the Decompose class
 
         Args:
-            model (str, optional): The version of the GPT model used for claim decomposition. Defaults to "gpt-3.5-turbo".
+            llm_client (BaseClient): The LLM client used for decomposing documents into claims.
+            prompt (BasePrompt): The prompt used for fact checking.
         """
-        self.getclaims = self.getclaimsfromgpt
-        self.chatgpt_client = GPTClient(model=model)
+        self.llm_client = llm_client
+        self.prompt = prompt
         self.doc2sent = self._nltk_doc2sent
 
     def _nltk_doc2sent(self, text: str):
@@ -31,7 +30,7 @@ class Decompose:
         sentence_list = [s.strip() for s in sentences if len(s.strip()) >= 3]
         return sentence_list
 
-    def getclaimsfromgpt(self, doc: str, num_retries: int = 3):
+    def getclaims(self, doc: str, num_retries: int = 3, prompt: str = None):
         """Use GPT to decompose a document into claims
 
         Args:
@@ -41,12 +40,14 @@ class Decompose:
         Returns:
             list: a list of claims
         """
-        prompt_text = SENTENCES_TO_CLAIMS_PROMPT
-        user_input = prompt_text.format(doc=doc).strip()
+        if prompt is None:
+            user_input = self.prompt.decompose_prompt.format(doc=doc).strip()
+        else:
+            user_input = prompt.format(doc=doc).strip()
 
-        messages = self.chatgpt_client.construct_message_list([user_input])
+        messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
-            response = self.chatgpt_client.multi_call(
+            response = self.llm_client.call(
                 messages=messages,
                 num_retries=1,
                 seed=42 + i,
@@ -56,8 +57,8 @@ class Decompose:
                 if isinstance(claims, list) and len(claims) > 0:
                     return claims
             except Exception as e:
-                logger.error(f"Parse chatgpt result error {e}, response is: {response}")
-                logger.error(f"Parse chatgpt result error, prompt is: {messages}")
+                logger.error(f"Parse LLM response error {e}, response is: {response}")
+                logger.error(f"Parse LLM response error, prompt is: {messages}")
 
         logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
         claims = self.doc2sent(doc)
