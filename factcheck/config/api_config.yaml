@@ -5,4 +5,4 @@ OPENAI_API_KEY: None
 ANTHROPIC_API_KEY: None
 
 LOCAL_API_KEY: None
-LOCAL_API_URL: None
+LOCAL_API_URL: http://localhost:8000/v1/

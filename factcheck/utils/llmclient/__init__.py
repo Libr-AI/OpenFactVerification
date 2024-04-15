@@ -1,5 +1,6 @@
-from factcheck.utils.llmclient.gpt_client import GPTClient
-from factcheck.utils.llmclient.claude_client import ClaudeClient
+from .gpt_client import GPTClient
+from .claude_client import ClaudeClient
+from .local_client import LocalClient
 
 
 def client_mapper(model_name: str):
@@ -8,5 +9,7 @@ def client_mapper(model_name: str):
         return GPTClient
     elif model_name.startswith("claude"):
         return ClaudeClient
+    elif model_name.startswith("vicuna"):
+        return LocalClient
     else:
         raise ValueError(f"Model {model_name} not supported.")
