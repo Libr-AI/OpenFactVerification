@@ -171,20 +171,18 @@ As Loki continues to evolve, our development plan focuses on broadening capabili
 
 ## 1. Support for Multiple Models
 - **Broader Model Compatibility:**
-  - Integration with leading AI models like ChatGPT, Claude, and others to diversify fact-checking capabilities.
-  - Implementation of self-hosted model options for enhanced privacy and control.
+  - Integration with leading AI models besides ChatGPT and Claude to diversify fact-checking capabilities, including Command R and Gemini.
+  - Implementation of self-hosted model options for enhanced privacy and control, e.g., FastChat, TGI, and vLLM.
 
 ## 2. Model-specific Prompt Engineering
-- **Customizable Prompts:**
-  - Allow users to create and customize prompts to tailor model responses to specific fact-checking needs.
 - **Unit Testing for Prompts:**
-  - Develop robust unit tests to ensure prompt reliability and accuracy across different scenarios.
+  - Develop robust unit tests for each step to ensure prompt reliability and accuracy across different scenarios.
 
 ## 3. Expanded Search Engine Support
 - **Diverse Search Engines:**
-  - Incorporate a variety of search engines including Serper, Google, and devv to broaden search capabilities.
+  - Incorporate a variety of search engines including Bing, scraperapi to broaden search capabilities.
   - Integration with [Searxng](https://github.com/searxng/searxng), an open-source metasearch engine.
-  - Support for specialized indexes like Llama Index and Langchain, and the ability to search local documents.
+  - Support for specialized indexes like LlamaIndex and Langchain, and the ability to search local documents.
 
 ## 4. Deployment and Scalability
 - **Dockerization:**
