@@ -51,7 +51,7 @@ export SERPER_API_KEY=... # this is required in evidence retrieval if serper bei
 export OPENAI_API_KEY=... # this is required in all tasks
 export ANTHROPIC_API_KEY=... # this is required only if you want to replace openai with anthropic
 export LOCAL_API_KEY=... # this is required only if you want to use local LLM
-export LOCAL_API_URL:... # this is required only if you want to use local LLM
+export LOCAL_API_URL=... # this is required only if you want to use local LLM
 ```
 
 Alternatively, you can save the api information in a yaml file with the same key names as the environment variables and pass the path to the yaml file as an argument to the `check_response` method.

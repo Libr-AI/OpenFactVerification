@@ -24,7 +24,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
     parser.add_argument("--prompt", type=str, default="chatgpt_prompt")
     parser.add_argument("--retriever", type=str, default="serper")
-    parser.add_argument("--api_config", type=str, default="demo_data/api_config.yaml")
+    parser.add_argument("--api_config", type=str, default="factcheck/config/api_config.yaml")
     args = parser.parse_args()
 
     # Load API config from yaml file

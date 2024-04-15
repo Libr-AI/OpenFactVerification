@@ -2,11 +2,13 @@ from .gpt_client import GPTClient
 from .claude_client import ClaudeClient
 from .local_openai_client import LocalOpenAIClient
 
+# fmt: off
 CLIENTS = {
     "gpt": GPTClient,
     "claude": ClaudeClient,
     "local_openai": LocalOpenAIClient
 }
+# fmt: on
 
 
 def model2client(model_name: str):
