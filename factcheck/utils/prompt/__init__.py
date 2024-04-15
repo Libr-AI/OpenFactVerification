@@ -1,6 +1,6 @@
-from factcheck.utils.prompt.chatgpt_prompt import ChatGPTPrompt
-from factcheck.utils.prompt.claude_prompt import ClaudePrompt
-from factcheck.utils.prompt.customized_prompt import CustomizedPrompt
+from .chatgpt_prompt import ChatGPTPrompt
+from .claude_prompt import ClaudePrompt
+from .customized_prompt import CustomizedPrompt
 
 prompt_map = {
     "chatgpt_prompt": ChatGPTPrompt,

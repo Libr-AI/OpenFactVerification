@@ -1,6 +1,6 @@
 import yaml
 import json
-from factcheck.utils.prompt.base import BasePrompt
+from .base import BasePrompt
 
 
 class CustomizedPrompt(BasePrompt):
