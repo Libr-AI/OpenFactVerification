@@ -189,7 +189,7 @@ Don’t miss out on the latest updates, feature releases, and community insights
 7. **Prompt Definitions via YAML and JSON:** Enabled prompt definitions using YAML and JSON, allowing prompts to be automatically read from corresponding YAML or JSON files when the prompt parameter ends with `.yaml` or `.json`.
 8. **Search Engine Switching:** Introduced a `--retriever` parameter to switch between different search engines, currently supporting Serper and Google.
 9. **Webapp Frontend Optimization:** Optimized the web application frontend to prevent duplicate requests during processing, including disabling the submit button after a click and displaying a timer during processing.
-
+10. **Client Switching:** introduce a --client parameter that allows switching between different client (chat API), currently support OpenAI compatible API (for local model and official model), and Anthropic chat API client.
 
 ## Development Plan
 
