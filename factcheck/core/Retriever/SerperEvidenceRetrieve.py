@@ -185,8 +185,12 @@ class SerperEvidenceRetrieve:
         questions_data = [{"q": question, "autocorrect": False} for question in questions]
         payload = json.dumps(questions_data)
         response = None
-        try:
-            response = requests.request("POST", url, headers=headers, data=payload)
-        except Exception as e:
-            logger.info(f"Warning, Serper API error: {e}.")
-        return response
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            return response
+        elif response.status_code == 403:
+            raise Exception("Failed to authenticate. Check your API key.")
+        else:
+            raise Exception(f"Error occurred: {response.text}")
+
