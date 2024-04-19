@@ -142,6 +142,22 @@ class FactCheck:
         api_data_dict = self._post_process(api_data_dict, claim_verify_dict)
         api_data_dict["step_info"] = api_data_dict["step_info"]
 
+        # Sum up prompt and completion tokens
+        total_prompt_tokens = 0
+        total_completion_tokens = 0
+        for submodule in [
+            self.decomposer,
+            self.checkworthy,
+            self.query_generator,
+            self.claimverify,
+        ]:
+            total_prompt_tokens += submodule.llm_client.prompt_tokens
+            total_completion_tokens += submodule.llm_client.completion_tokens
+        api_data_dict["token_count"]["total_prompt_tokens"] = total_prompt_tokens
+        api_data_dict["token_count"][
+            "total_completion_tokens"
+        ] = total_completion_tokens
+
         return api_data_dict
 
     def _post_process(self, api_data_dict, claim_verify_dict: dict):

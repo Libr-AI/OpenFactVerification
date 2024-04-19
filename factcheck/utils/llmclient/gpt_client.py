@@ -1,4 +1,3 @@
-import time
 from openai import OpenAI
 from .base import BaseClient
 
@@ -13,6 +12,8 @@ class GPTClient(BaseClient):
     ):
         super().__init__(model, api_config, max_requests_per_minute, request_window)
         self.client = OpenAI(api_key=self.api_config["OPENAI_API_KEY"])
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
 
     def _call(self, messages: str, **kwargs):
         seed = kwargs.get("seed", 42)  # default seed is 42
@@ -25,6 +26,8 @@ class GPTClient(BaseClient):
             messages=messages,
         )
         r = response.choices[0].message.content
+        self.prompt_tokens += response.usage.prompt_tokens
+        self.completion_tokens += response.usage.completion_tokens
         return r
 
     def get_request_length(self, messages):
