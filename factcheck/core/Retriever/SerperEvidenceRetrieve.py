@@ -194,3 +194,16 @@ class SerperEvidenceRetrieve:
         else:
             raise Exception(f"Error occurred: {response.text}")
 
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--serper_api_key", type=str, help="API key for serper")
+    args = parser.parse_args()
+
+    api_config = {
+        "SERPER_API_KEY": args.serper_api_key
+    }
+    retriever = SerperEvidenceRetrieve(api_config)
+
+    result = retriever._request_serper_api(["Apple", "IBM"])
+    print(result.json())
