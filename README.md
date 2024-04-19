@@ -106,14 +106,6 @@ python webapp.py --api_config demo_data/api_config.yaml
 <p align="center"><img src="./fig/web_result.png"/></p>
 
 
-## Contributing
-We welcome contributions from the community! If you'd like to contribute, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a pull request.
-
 
 ## Customize Your Experience
 
@@ -131,6 +123,10 @@ python -m factcheck --modal string --input "MBZUAI is the first AI university in
 ```bash
 python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --prompt demo_data/sample_prompt.yaml
 ```
+
+## Contributing to Loki
+
+Welcome and thank you for your interest in the Loki project! We welcome contributions and feedback from the community. To get started, please refer to our [Contribution Guidelines](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/CONTRIBUTING.md).
 
 ## Ready for More?
 
@@ -176,45 +172,6 @@ Your support enables us to:
 Don’t miss out on the latest updates, feature releases, and community insights! We invite you to subscribe to our newsletter and become a part of our growing community.
 
 💌 Subscribe now at [our website](https://www.librai.tech/)!
-
-
-## Change Log
-
-1. **API Key Handling:** Transitioned from creating key files via copying to dynamically reading all API keys from a YAML file, streamlining configuration processes.
-2. **Unified Configuration Dictionary:** Replaced platform-specific dictionaries with a unified dictionary that aligns with environmental variable naming conventions, enhancing consistency and maintainability.
-3. **Model Switching:** Introduced a `--model` parameter that allows switching between different models, currently supporting OpenAI and Anthropic.
-4. **Modular Architecture:** Restructured the codebase into one Base class file and individual class files for each model, enhancing modularity and clarity.
-5. **Base Class Redefinition:** Redefined the Base class to abstract asynchronous operations and other functionalities. Users customizing models need only override three functions.
-6. **Prompt Switching:** Added a `--prompt` parameter for switching between predefined prompts, initially supporting prompts for OpenAI and Anthropic.
-7. **Prompt Definitions via YAML and JSON:** Enabled prompt definitions using YAML and JSON, allowing prompts to be automatically read from corresponding YAML or JSON files when the prompt parameter ends with `.yaml` or `.json`.
-8. **Search Engine Switching:** Introduced a `--retriever` parameter to switch between different search engines, currently supporting Serper and Google.
-9. **Webapp Frontend Optimization:** Optimized the web application frontend to prevent duplicate requests during processing, including disabling the submit button after a click and displaying a timer during processing.
-10. **Client Switching:** introduce a --client parameter that allows switching between different client (chat API), currently support OpenAI compatible API (for local model and official model), and Anthropic chat API client.
-
-## Development Plan
-
-As Loki continues to evolve, our development plan focuses on broadening capabilities and enhancing flexibility to meet the diverse needs of our users. Here are the key areas we are working on:
-
-## 1. Support for Multiple Models
-- **Broader Model Compatibility:**
-  - Integration with leading AI models besides ChatGPT and Claude to diversify fact-checking capabilities, including Command R and Gemini.
-  - Implementation of self-hosted model options for enhanced privacy and control, e.g., FastChat, TGI, and vLLM.
-
-## 2. Model-specific Prompt Engineering
-- **Unit Testing for Prompts:**
-  - Develop robust unit tests for each step to ensure prompt reliability and accuracy across different scenarios.
-
-## 3. Expanded Search Engine Support
-- **Diverse Search Engines:**
-  - Incorporate a variety of search engines including Bing, scraperapi to broaden search capabilities.
-  - Integration with [Searxng](https://github.com/searxng/searxng), an open-source metasearch engine.
-  - Support for specialized indexes like LlamaIndex and Langchain, and the ability to search local documents.
-
-## 4. Deployment and Scalability
-- **Dockerization:**
-  - Packaging Loki into Docker containers to simplify deployment and scale-up operations, ensuring Loki can be easily set up and maintained across different environments.
-
-We are committed to these enhancements to make Loki not just more powerful, but also more adaptable to the needs of a global user base. Stay tuned as we roll out these exciting developments!
 
 
 ## License

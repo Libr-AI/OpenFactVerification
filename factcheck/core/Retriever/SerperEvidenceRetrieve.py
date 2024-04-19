@@ -193,4 +193,3 @@ class SerperEvidenceRetrieve:
             raise Exception("Failed to authenticate. Check your API key.")
         else:
             raise Exception(f"Error occurred: {response.text}")
-
