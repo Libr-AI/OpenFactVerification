@@ -10,7 +10,7 @@ from factcheck.utils.web_util import crawl_web
 logger = CustomLogger(__name__).getlog()
 
 
-class SerperEvidenceRetrieve:
+class SerperEvidenceRetriever:
     def __init__(self, api_config: dict = None):
         """Initialize the SerperEvidenceRetrieve class"""
         self.lang = "en"

@@ -44,8 +44,8 @@ pip install -r requirements.txt
 
 ## Configure API Keys
 
-API keys can be configured from both **Environment Variables** and **Configuration Files**. 
-Specifically, the tool initialization loads API keys from environment variables or config file, config file take precedence. Related implementations can be seen from `factcheck/utils/api_config.py`. 
+API keys can be configured from both **Environment Variables** and **Configuration Files**.
+Specifically, the tool initialization loads API keys from environment variables or config file, config file take precedence. Related implementations can be seen from `factcheck/utils/api_config.py`.
 
 ### Environment Variables
 Example: Export essential api key to the environment
@@ -57,7 +57,7 @@ export LOCAL_API_KEY=... # this is required only if you want to use local LLM
 export LOCAL_API_URL=... # this is required only if you want to use local LLM
 ```
 
-### Configuration Files 
+### Configuration Files
 
 Alternatively, we can store the api information in a YAML file with the same key names as the environment variables and pass the path to the yaml file as an argument to the `check_response` method.
 
@@ -94,7 +94,7 @@ keys = [
 ]
 ```
 
-Only these variables can be loaded from **Environment Variables**. If additional variables are required, you are recommended to define these variable in a YAML files. All variables in the api configuration file will be loaded automatically. 
+Only these variables can be loaded from **Environment Variables**. If additional variables are required, you are recommended to define these variable in a YAML files. All variables in the api configuration file will be loaded automatically.
 
 ## Basic Usage
 
@@ -145,11 +145,11 @@ python -m factcheck --modal video --input demo_data/video.m4v
 ```
 
 ### Customized Prompts
-Prompts for each step can be specified in a YAML/JSON file. Please see `factcheck/config/sample_prompt.yaml` as an example. 
+Prompts for each step can be specified in a YAML/JSON file. Please see `factcheck/config/sample_prompt.yaml` as an example.
 
-For now, there are four prompts in each file with respect to claim decomposition, claim checkworthy, query generation, and claim verification, respectively. 
+For now, there are four prompts in each file with respect to claim decomposition, claim checkworthy, query generation, and claim verification, respectively.
 
-When using your own prompts, please use `--prompt` to specify the prompt file path. 
+When using your own prompts, please use `--prompt` to specify the prompt file path.
 
 
 ```bash
@@ -159,7 +159,7 @@ python -m factcheck --input "MBZUAI is the first AI university in the world" --p
 
 ### Switch Between Models
 
-Currently, Loki supports models from OpenAI, Anthropic, and local-hosted models. To specify the model version used for fact checking, there are two arguments `--model` and `--client`. 
+Currently, Loki supports models from OpenAI, Anthropic, and local-hosted models. To specify the model version used for fact checking, there are two arguments `--model` and `--client`.
 Please see `factcheck/utils/llmclient/__init__.py` for details.
 
 | Model     | --model        | --client     |
@@ -171,7 +171,7 @@ Please see `factcheck/utils/llmclient/__init__.py` for details.
 
 ```bash
 # OpenAI
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --model gpt-4-turbo	
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --model gpt-4-turbo
 
 # Anthropic
 python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --model claude-3-opus-20240229

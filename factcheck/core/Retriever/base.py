@@ -7,7 +7,7 @@ from factcheck.utils.logger import CustomLogger
 logger = CustomLogger(__name__).getlog()
 
 
-class EvidenceRetrieve:
+class BaseRetriever:
     def __init__(self, api_config: dict = None):
         """Initialize the EvidenceRetrieve class."""
         import spacy

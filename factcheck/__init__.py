@@ -53,7 +53,7 @@ class FactCheck:
                 logger.info(f"== Use specified client: {client}")
                 LLMClient = CLIENTS[client]
             else:
-                logger.info("== Client is not specified, use model2client() to get the default llm client.")
+                logger.info("== LLMClient is not specified, use default llm client.")
                 LLMClient = model2client(_model_name)
             setattr(self, key, LLMClient(model=_model_name, api_config=self.api_config))
 

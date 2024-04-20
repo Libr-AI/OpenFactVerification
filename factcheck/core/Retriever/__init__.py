@@ -1,9 +1,9 @@
-from .GoogleEvidenceRetrieve import GoogleEvidenceRetrieve
-from .SerperEvidenceRetrieve import SerperEvidenceRetrieve
+from .google_retriever import GoogleEvidenceRetriever
+from .serper_retriever import SerperEvidenceRetriever
 
 retriever_map = {
-    "google": GoogleEvidenceRetrieve,
-    "serper": SerperEvidenceRetrieve,
+    "google": GoogleEvidenceRetriever,
+    "serper": SerperEvidenceRetriever,
 }
 
 
