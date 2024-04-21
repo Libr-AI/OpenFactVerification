@@ -10,7 +10,7 @@ from factcheck.utils.web_util import crawl_web
 logger = CustomLogger(__name__).getlog()
 
 
-class SerperEvidenceRetrieve:
+class SerperEvidenceRetriever:
     def __init__(self, api_config: dict = None):
         """Initialize the SerperEvidenceRetrieve class"""
         self.lang = "en"
@@ -194,16 +194,16 @@ class SerperEvidenceRetrieve:
         else:
             raise Exception(f"Error occurred: {response.text}")
 
+
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--serper_api_key", type=str, help="API key for serper")
     args = parser.parse_args()
 
-    api_config = {
-        "SERPER_API_KEY": args.serper_api_key
-    }
-    retriever = SerperEvidenceRetrieve(api_config)
+    api_config = {"SERPER_API_KEY": args.serper_api_key}
+    retriever = SerperEvidenceRetriever(api_config)
 
     result = retriever._request_serper_api(["Apple", "IBM"])
     print(result.json())
