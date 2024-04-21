@@ -191,11 +191,12 @@ add slack channel here
 ## Cite as
 ```
 @misc{Loki,
-  author = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Nakov, Preslav and Baldwin, Timothy and Han, Xudong and Li, Haonan},
-  title = {Loki: An Open-source Tool for Fact Verification},
-  year = {2024},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Libr-AI/Loki}},
-}
+  author       = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Nakov, Preslav and Baldwin, Timothy and Han, Xudong and Li, Haonan},
+  title        = {Loki: An Open-source Tool for Fact Verification},
+  month        = {04},
+  year         = {2024},
+  publisher    = {Zenodo},
+  version      = {v0.0.2},
+  doi          = {10.5281/zenodo.11004461},
+  url          = {https://zenodo.org/records/11004461}
 ```
