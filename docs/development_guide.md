@@ -44,7 +44,7 @@ The prompt file should contains a class which is a subclass of `BasePrompt` from
 
 ### Prompt Optimization
 
-To optimize the prompt for a specific LLM, you can modify the prompt in `factcheck/utils/prompt/`. We will release a minimal test suite to evaluate the performance of the prompt in the future.
+To optimize the prompt for a specific LLM, you can modify the prompt in `factcheck/utils/prompt/`. After optimization, you can run our minimal test in `script/minimal_test.py`, you are also welcomed to add more test cases to the minimal test set in `script/minimal_test.json`.
 
 
 

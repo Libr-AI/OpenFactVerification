@@ -17,6 +17,7 @@ We welcome contributions and feedback from the community and recommend a few bes
 * PRs should be titled descriptively, and be opened with a brief description of the scope and intent of the new contribution.
 * New features should have appropriate documentation added alongside them.
 * Aim for code maintainability, and minimize code copying.
+* Minimal test are required before submit a PR, run `script/minimal_test.py` and all test cases are required to be passed.
 
 ### For Feature Requests
 
