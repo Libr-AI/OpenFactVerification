@@ -1,0 +1,51 @@
+[
+    {
+        "id": 1,
+        "response": "I am a famous scientist.",
+        "attributes": {
+            "factuality": "Nothing to check."
+        }
+    },
+    {
+        "id": 2,
+        "response": "Steve Jobs is the founder of Apple.",
+        "attributes": {
+            "factuality": true
+        }
+    },
+    {
+        "id": 3,
+        "response": "Elon Musk bought Twitter in 2023 and renamed it to X.",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 4,
+        "response": "Blockchain technology is only used for cryptocurrencies.",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 5,
+        "response": "Facial recognition technology is infallible and cannot be tricked.",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 6,
+        "response": "Shanghai Jiao Tong University is one of the top public universities in Guangdong, China",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 7,
+        "response": "William Yarnel Slack (August 1, 1816 - March 21, 1862) was an American lawyer, politician, and military officer who fought for the Confederate States of America during the American Civil War. Born in Kentucky, Slack moved to Missouri as a child and later entered the legal profession. After serving in the Missouri General Assembly from 1842 to 1843, he fought as a captain in the United States Army for fourteen months during the Mexican–American War, beginning in 1846. He saw action at the Battle of Embudo Pass and the Siege of Pueblo de Taos. Returning to a legal career, Slack became influential in his local area. After the outbreak of the American Civil War in April 1861, Slack, who held pro-slavery views, supported the Confederate cause. When the Missouri State Guard (MSG) was formed the next month to oppose the Union Army, he was appointed as a brigadier general in the MSG's 4th Division. After participating in the Battle of Carthage in July, he fought in the Battle of Wilson's Creek on August 10. After a surprise Union attack, Slack's deployment of his division gave time for further Confederate States Army and MSG troops to deploy. Suffering a bad hip wound at Wilson's Creek, he was unable to rejoin his command until October. Along with other Missouri State Guard officers, Slack transferred to the Confederate States Army in late 1861 where he commanded a brigade with the rank of colonel. On March 7, 1862, during the Battle of Pea Ridge, Slack suffered another wound that was close to the injury he had received at Wilson's Creek. Infection set in, and he died on March 21. He was posthumously promoted to brigadier general in the Confederate army on April 17; the Confederate States Senate might not have known that he was dead at the time of the promotion.  (1786)",
+        "attributes": {
+            "factuality": false
+        }
+    }
+]
