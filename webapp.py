@@ -4,7 +4,7 @@ import argparse
 from factcheck.utils.utils import load_yaml
 from factcheck import FactCheck
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="assets")
 
 
 @app.route("/", methods=["GET", "POST"])

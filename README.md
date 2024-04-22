@@ -48,7 +48,7 @@ export OPENAI_API_KEY=... # this is required in all tasks
 Alternatively, you configure API keys via a YAML file, see [user guide](docs/user_guide.md) for more details.
 
 A sample test case:
-<p align="center"><img src="./fig/cmd_example.gif"/></p>
+<p align="center"><img src="./assets/cmd_example.gif"/></p>
 
 ## Usage
 
