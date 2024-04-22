@@ -11,12 +11,6 @@
 ## Overview
 Loki is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join us on [Discord](https://discord.gg/NRge6RS7)!
 
-## Components
-- **Decomposer:** Breaks down extensive texts into digestible, independent claims, setting the stage for detailed analysis.
-- **Checkworthy:** Assesses each claim's potential significance, filtering out vague or ambiguous statements to focus on those that truly matter. For example, vague claims like "MBZUAI has a vast campus" are considered unworthy because of the ambiguous nature of "vast."
-- **Query Generator:** Transforms check-worthy claims into precise queries, ready to navigate the vast expanse of the internet in search of truth.
-- **Evidence Crawler:** Ventures into the digital realm, retrieving relevant evidence that forms the foundation of informed verification.
-- **ClaimVerify:** Examines the gathered evidence, determining the veracity of each claim to uphold the integrity of information.
 
 ## Quick Start
 
@@ -49,42 +43,19 @@ You can choose to export essential api key to the environment
 ```bash
 export SERPER_API_KEY=... # this is required in evidence retrieval if serper being used
 export OPENAI_API_KEY=... # this is required in all tasks
-export ANTHROPIC_API_KEY=... # this is required only if you want to replace openai with anthropic
-export LOCAL_API_KEY=... # this is required only if you want to use local LLM
-export LOCAL_API_URL=... # this is required only if you want to use local LLM
 ```
 
-Alternatively, you can save the api information in a yaml file with the same key names as the environment variables and pass the path to the yaml file as an argument to the `check_response` method.
+Alternatively, you configure API keys via a YAML file, see [user guide](docs/user_guide.md) for more details.
 
-See `demo_data\api_config.yaml` as an example of the api configuration file.
-- Example: Pass the path to the api configuration file
-```bash
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/api_config.yaml
-```
-
-### Test
-
+A sample test case:
 <p align="center"><img src="./fig/cmd_example.gif"/></p>
-
-To test the project, you can run the `factcheck.py` script:
-```bash
-# String
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world"
-# Text
-python -m factcheck --modal text --input demo_data/text.txt
-# Speech
-python -m factcheck --modal speech --input demo_data/speech.mp3
-# Image
-python -m factcheck --modal image --input demo_data/image.webp
-# Video
-python -m factcheck --modal video --input demo_data/video.m4v
-```
 
 ## Usage
 
-The main interface of the Fact-check Pipeline is located in `factcheck/core/FactCheck.py`, which contains the `check_response` method. This method integrates the complete pipeline, where each functionality is encapsulated in its class as described in the Features section.
+The main interface of Loki fact-checker located in `factcheck/__init__.py`, which contains the `check_response` method. This method integrates the complete fact verification pipeline, where each functionality is encapsulated in its class as described in the Features section.
 
-Example usage:
+#### Used as a Library
+
 ```python
 from factcheck import FactCheck
 
@@ -98,35 +69,29 @@ results = factcheck_instance.check_response(text)
 print(results)
 ```
 
-Web app usage:
+#### Used as a Web App
 ```bash
 python webapp.py --api_config demo_data/api_config.yaml
 ```
-<p align="center"><img src="./fig/web_input.png"/></p>
-<p align="center"><img src="./fig/web_result.png"/></p>
 
+#### Multimodal Usage
 
-
-## Customize Your Experience
-
-### Custom Models
 ```bash
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/api_config.yaml --model claude-3-opus-20240229 --prompt claude_prompt
+# String
+python -m factcheck --modal string --input "MBZUAI is the first AI university in the world"
+# Text
+python -m factcheck --modal text --input demo_data/text.txt
+# Speech
+python -m factcheck --modal speech --input demo_data/speech.mp3
+# Image
+python -m factcheck --modal image --input demo_data/image.webp
+# Video
+python -m factcheck --modal video --input demo_data/video.m4v
 ```
 
-### Custom Evidence Retrieval
-```bash
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --retriever google
-```
 
-### Custom Prompts
-```bash
-python -m factcheck --modal string --input "MBZUAI is the first AI university in the world" --api_config demo_data/test_api_config.yaml --prompt demo_data/sample_prompt.yaml
-```
-
-## Contributing to Loki
-
-Welcome and thank you for your interest in the Loki project! We welcome contributions and feedback from the community. To get started, please refer to our [Contribution Guidelines](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/CONTRIBUTING.md).
+#### Customize Your Experience
+For advanced usage, please see our [user guide](docs/user_guide.md).
 
 ## Ready for More?
 
@@ -166,27 +131,29 @@ Your support enables us to:
 [TRY NOW!](https://aip.librai.tech/login)
 
 
-## Stay Connected and Informed
+### Contributing to Loki project
 
+Welcome and thank you for your interest in the Loki project! We welcome contributions and feedback from the community. To get started, please refer to our [Contribution Guidelines](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/CONTRIBUTING.md).
 
-Don’t miss out on the latest updates, feature releases, and community insights! We invite you to subscribe to our newsletter and become a part of our growing community.
-
-💌 Subscribe now at [our website](https://www.librai.tech/)!
-
-
-## License
-This project is licensed under the [MIT license](LICENSE.md) - see the LICENSE file for details.
-
-## Acknowledgments
+### Acknowledgments
 - Special thanks to all contributors who have helped in shaping this project.
 
 <!---
 add slack channel here
 -->
 
+
+### Stay Connected and Informed
+
+Don’t miss out on the latest updates, feature releases, and community insights! We invite you to subscribe to our newsletter and become a part of our growing community.
+
+💌 Subscribe now at [our website](https://www.librai.tech/)!
+
+
+
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Libr-AI/OpenFactVerification&type=Date)](https://star-history.com/#Libr-AI/OpenFactVerification&Date)
+> [![Star History Chart](https://api.star-history.com/svg?repos=Libr-AI/OpenFactVerification&type=Date)](https://star-history.com/#Libr-AI/OpenFactVerification&Date)
 
 ## Cite as
 ```
