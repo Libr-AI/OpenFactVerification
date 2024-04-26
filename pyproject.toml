@@ -1,7 +1,9 @@
 [tool.poetry]
-package-mode = false
 name = "openfactverification"
 version = "0.1.0"
+packages = [
+    {include = "factcheck"}
+]
 description = "Loki: An Open-source Tool for Fact Verification"
 authors = [
     "Hao Wang <hao.wang@librai.tech>",
