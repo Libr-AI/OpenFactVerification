@@ -1,7 +1,7 @@
 <div align="center">
   <br />
     <a href="https://www.librai.tech">
-      <img alt="LibrAI Logo" src="./fig/librai_librai.png" alt="LibrAI Logo" width="50%" height="auto">
+      <img alt="LibrAI Logo" src="./assets/librai_librai.png" alt="LibrAI Logo" width="50%" height="auto">
     </a>
   <br />
 </div>
@@ -9,7 +9,7 @@
 # Loki: An Open-source Tool for Fact Verification
 
 ## Overview
-Loki is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join us on [Discord](https://discord.gg/NRge6RS7)!
+Loki is our open-source solution designed to automate the process of verifying factuality. It provides a comprehensive pipeline for dissecting long texts into individual claims, assessing their worthiness for verification, generating queries for evidence search, crawling for evidence, and ultimately verifying the claims. This tool is especially useful for journalists, researchers, and anyone interested in the factuality of information. To stay updated, please subscribe to our newsletter at [our website](https://www.librai.tech/) or join us on [Discord](https://discord.gg/ssxtFVbDdT)!
 
 
 ## Quick Start
