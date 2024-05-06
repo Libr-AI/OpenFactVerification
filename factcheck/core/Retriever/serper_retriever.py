@@ -67,6 +67,7 @@ class SerperEvidenceRetriever:
 
         # get the results for queries with an answer box
         query_url_dict = {}
+        url_to_date = {}
         _snippet_to_check = []
         for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
             if query != result.get("searchParameters").get("q"):
@@ -85,13 +86,17 @@ class SerperEvidenceRetriever:
                     }
             else:
                 results = result.get("organic", [])[:top_k]  # Choose top 5 result
-                merge_evidence_text = [f"Text: {_result['snippet']} \n Source: {_result['link']}" for _result in results]
-                merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
+                merge_evidence_text = [
+                    f"Text: {_result['snippet']} \n Source: {_result['link']} \n Date: {_result.get('date', 'Unknown')}"
+                    for _result in results
+                ]
                 evidences[i] = {
                     "text": "\n\n".join(merge_evidence_text),
                     "url": "Multiple",
                 }
 
+                # Save date for each url
+                url_to_date.update({result.get("link"): result.get("date") for result in results})
                 # Save query-url pair, 1 query may have multiple urls
                 query_url_dict.update({query: [result.get("link") for result in results]})
                 _snippet_to_check += [result["snippet"] for result in results]
@@ -157,7 +162,7 @@ class SerperEvidenceRetriever:
         for _query in query_snippet_dict.keys():
             _query_index = query_list.index(_query)
             _snippet_list = query_snippet_dict[_query]
-            merge_evidence_text = [f"Text: {snippet} \n Source: {_url}" for snippet, _url in zip(_snippet_list, url_to_check)]
+            merge_evidence_text = [f"Text: {snippet} \n Source: {_url} \n Date: {url_to_date.get(_url, 'Unknown')}" for snippet, _url in zip(_snippet_list, url_to_check)]
             merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
             evidences[_query_index] = {
                 "text": "\n\n".join(merge_evidence_text),
