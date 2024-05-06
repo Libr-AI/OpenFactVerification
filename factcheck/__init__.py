@@ -29,6 +29,7 @@ class FactCheck:
         evidence_retrieval_model: str = None,
         claim_verify_model: str = None,
         api_config: dict = None,
+        num_seed_retries: int = 3,
     ):
         self.encoding = tiktoken.get_encoding("cl100k_base")
 
@@ -63,6 +64,7 @@ class FactCheck:
         self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
         self.evidence_crawler = retriever_mapper(retriever_name=retriever)(api_config=self.api_config)
         self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
+        self.num_seed_retries = num_seed_retries
 
         logger.info("===Sub-modules Init Finished===")
 
@@ -73,7 +75,7 @@ class FactCheck:
     def check_response(self, response: str):
         st_time = time.time()
         # step 1
-        claims = self.decomposer.getclaims(doc=response)
+        claims = self.decomposer.getclaims(doc=response, num_retries=self.num_seed_retries)
         for i, claim in enumerate(claims):
             logger.info(f"== response claims {i}: {claim}")
 
@@ -81,7 +83,7 @@ class FactCheck:
         (
             checkworthy_claims,
             pairwise_checkworthy,
-        ) = self.checkworthy.identify_checkworthiness(claims)
+        ) = self.checkworthy.identify_checkworthiness(claims, num_retries=self.num_seed_retries)
         for i, claim in enumerate(checkworthy_claims):
             logger.info(f"== Check-worthy claims {i}: {claim}")
 
