@@ -67,7 +67,7 @@ class SerperEvidenceRetriever:
 
         # get the results for queries with an answer box
         query_url_dict = {}
-        url_to_date = {}
+        url_to_date = {}  # TODO: decide whether to use date
         _snippet_to_check = []
         for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
             if query != result.get("searchParameters").get("q"):
@@ -160,7 +160,7 @@ class SerperEvidenceRetriever:
         for _query in query_snippet_dict.keys():
             _query_index = query_list.index(_query)
             _snippet_list = query_snippet_dict[_query]
-            merge_evidence_text = [f"Text: {snippet} \n Source: {_url} \n Date: {url_to_date.get(_url, 'Unknown')}" for snippet, _url in zip(_snippet_list, url_to_check)]
+            merge_evidence_text = [f"Text: {snippet} \n Source: {_url}" for snippet, _url in zip(_snippet_list, url_to_check)]
             merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
             evidences[_query_index] = {
                 "text": "\n\n".join(merge_evidence_text),
