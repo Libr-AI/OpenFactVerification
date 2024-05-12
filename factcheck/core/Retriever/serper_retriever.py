@@ -86,10 +86,8 @@ class SerperEvidenceRetriever:
                     }
             else:
                 results = result.get("organic", [])[:top_k]  # Choose top 5 result
-                merge_evidence_text = [
-                    f"Text: {_result['snippet']} \n Source: {_result['link']} \n Date: {_result.get('date', 'Unknown')}"
-                    for _result in results
-                ]
+                merge_evidence_text = [f"Text: {_result['snippet']} \n Source: {_result['link']}" for _result in results]
+                merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
                 evidences[i] = {
                     "text": "\n\n".join(merge_evidence_text),
                     "url": "Multiple",
