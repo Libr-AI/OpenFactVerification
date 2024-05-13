@@ -19,7 +19,7 @@ logger = CustomLogger(__name__).getlog()
 class FactCheck:
     def __init__(
         self,
-        default_model: str = "gpt-4-0125-preview",
+        default_model: str = "gpt-4-turbo",
         client: str = None,
         prompt: str = "chatgpt_prompt",
         retriever: str = "serper",
@@ -27,7 +27,7 @@ class FactCheck:
         checkworthy_model: str = None,
         query_generator_model: str = None,
         evidence_retrieval_model: str = None,
-        claim_verify_model: str = None,
+        claim_verify_model: str = "gpt-3.5-turbo",
         api_config: dict = None,
         num_seed_retries: int = 3,
     ):
@@ -76,8 +76,11 @@ class FactCheck:
         st_time = time.time()
         # step 1
         claims = self.decomposer.getclaims(doc=response, num_retries=self.num_seed_retries)
+        claim2doc = self.decomposer.restore_claims(doc=response, claims=claims, num_retries=self.num_seed_retries)
         for i, claim in enumerate(claims):
             logger.info(f"== response claims {i}: {claim}")
+        for claim, origin in claim2doc.items():
+            logger.info(f"== restore claims --- {claim} --- {origin}")
 
         # step 2
         (
@@ -100,6 +103,7 @@ class FactCheck:
             "step_info": {
                 "0_response": response,
                 "1_decompose": claims,
+                "1_restore": claim2doc,
                 "2_checkworthy": checkworthy_claims,
                 "2_checkworthy_pairwise": pairwise_checkworthy,
                 "3_query_generator": {},
@@ -129,6 +133,8 @@ class FactCheck:
 
         # step 5
         claim_verify_dict = self.claimverify.verify_claims(claims_evidences_dict=claim_evidence_dict)
+        for k, v in claim_verify_dict.items():
+            logger.info(f"== Claim: {k} --- Verify: {v}")
         step5_time = time.time()
         logger.info(
             f"== State: Done! \n Total time: {step5_time-st_time:.2f}s. (create claims:{step123_time-st_time:.2f}s |||  retrieve:{step4_time-step123_time:.2f}s ||| verify:{step5_time-step4_time:.2f}s)"
@@ -147,18 +153,21 @@ class FactCheck:
         return api_data_dict
 
     def _post_process(self, api_data_dict, claim_verify_dict: dict):
-        label_list = list()
-        api_claim_data_list = list()
-        for claim in api_data_dict["step_info"]["2_checkworthy"]:
+        api_claim_data_list = []
+        for claim, origin in api_data_dict["step_info"]["1_restore"].items():
             api_claim_data = {}
-            claim_detail = claim_verify_dict.get(claim, {})
-            curr_claim_label = claim_detail.get("factuality", False)
-            label_list.append(curr_claim_label)
             api_claim_data["claim"] = claim
-            api_claim_data["factuality"] = curr_claim_label
-            api_claim_data["correction"] = claim_detail.get("correction", "")
-            api_claim_data["reference_url"] = claim_detail.get("url", "")
+            api_claim_data["origin"] = origin
+            if claim not in claim_verify_dict:
+                api_claim_data["factuality"] = "Nothing to check."
+            else:
+                api_claim_data["evidence"] = claim_verify_dict.get(claim, {})
+                labels = list(map(lambda x: x["relationship"], api_claim_data["evidence"]))
+                api_claim_data["factuality"] = labels.count("SUPPORTS") / (labels.count("REFUTES") + labels.count("SUPPORTS"))
             api_claim_data_list.append(api_claim_data)
-        api_data_dict["factuality"] = all(label_list) if label_list else True
-        api_data_dict["claims_details"] = api_claim_data_list
+        api_data_dict["claim_details"] = api_claim_data_list
+        api_data_dict["summary"] = {
+            "num_claims": len(api_data_dict["step_info"]["1_restore"]),
+            "num_supported_claims": len(list(filter(lambda x: x["factuality"] > 0.5, api_claim_data_list))),
+        }
         return api_data_dict

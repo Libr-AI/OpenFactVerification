@@ -169,6 +169,8 @@ log/
 # Mac
 *.DS_Store
 
+# lark key and utils
+factcheck/utils/lark.py
 # openai_key_file
 factcheck/utils/openai_key.py
 factcheck/config/secret_dict.py

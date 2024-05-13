@@ -32,10 +32,13 @@ class ClaimVerify:
         evidence_lists = list(claims_evidences_dict.values())
         results = self._verify_all_claims(claims, evidence_lists, prompt=prompt)
 
-        for claim, evidence_list, result in zip(claims, evidence_lists, results):
-            result["claim"] = claim
-            result["evidence"] = evidence_list
+        i = 0
+        for claim, evidence_list in claims_evidences_dict.items():
+            result = results[i : i + len(evidence_list)]
+            for j in range(len(result)):
+                result[j]["evidence"] = evidence_list[j]
             claim_detail_dict[claim] = result
+            i += len(evidence_list)
         return claim_detail_dict
 
     def _verify_all_claims(
@@ -55,17 +58,17 @@ class ClaimVerify:
         Returns:
             list[dict[str, any]]: a list of factuality results, including reasoning, error, correction, and factuality.
         """
-        factual_results = [None] * len(claims)
         attempts = 0
         # construct user inputs with respect to each claim and its evidences
         messages_list = []
         for claim, evidences in zip(claims, evidence_lists):
-            if prompt is None:
-                user_input = self.prompt.verify_prompt.format(claim=claim, evidence=evidences)
-            else:
-                user_input = prompt.format(claim=claim, evidence=evidences)
-
-            messages_list.append(user_input)
+            for e in evidences:
+                if prompt is None:
+                    user_input = self.prompt.verify_prompt.format(claim=claim, evidence=e)
+                else:
+                    user_input = prompt.format(claim=claim, evidence=e)
+                messages_list.append(user_input)
+        factual_results = [None] * len(messages_list)
 
         while (attempts < num_retries) and (None in factual_results):
             _messages = [_message for _i, _message in enumerate(messages_list) if factual_results[_i] is None]
@@ -76,7 +79,7 @@ class ClaimVerify:
             for _response, _index in zip(_response_list, _indices):
                 try:
                     _response_json = json.loads(_response)
-                    assert all(k in _response_json for k in ["reasoning", "error", "correction", "factuality"])
+                    assert all(k in _response_json for k in ["reasoning", "relationship"])
                     factual_results[_index] = _response_json
                 except:  # noqa: E722
                     logger.info(f"Warning: LLM response parse fail, retry {attempts}.")
@@ -84,9 +87,7 @@ class ClaimVerify:
 
         _template_results = {
             "reasoning": "[System Warning] Can not identify the factuality of the claim.",
-            "error": "",
-            "correction": "",
-            "factuality": False,
+            "relationship": "IRRELEVANT",
         }
         # if cannot get correct response within num_retries times.
         factual_results = [_item if _item is not None else _template_results for _item in factual_results]

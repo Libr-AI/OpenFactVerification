@@ -37,13 +37,16 @@ class SerperEvidenceRetriever:
         i = 0
         claim_evidence_dict = {}
         for claim, queries in claim_query_dict_L:
-            claim_evidence_dict[claim] = evidence_list[i : i + len(queries)]
+            evidences_per_query_L = evidence_list[i : i + len(queries)]
+            claim_evidence_dict[claim] = [e for evidences in evidences_per_query_L for e in evidences]
             i += len(queries)
         assert i == len(evidence_list)
         logger.info("Collect evidences done!")
         return claim_evidence_dict
 
-    def _retrieve_evidence_4_all_claim(self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True):
+    def _retrieve_evidence_4_all_claim(
+        self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True
+    ) -> list[list[str]]:
         """Retrieve evidences for the given queries
 
         Args:
@@ -52,11 +55,11 @@ class SerperEvidenceRetriever:
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
         Returns:
-            _type_: _description_
+            list[list[]]: a list of [a list of evidences for each given query].
         """
 
         # init the evidence list with None
-        evidences = [None] * len(query_list)
+        evidences = [[]] * len(query_list)
 
         # get the response from serper
         serper_response = self._request_serper_api(query_list)
@@ -75,23 +78,27 @@ class SerperEvidenceRetriever:
 
             if "answerBox" in result:
                 if "answer" in result["answerBox"]:
-                    evidences[i] = {
-                        "text": f"{query}\nAnswer: {result['answerBox']['answer']}",
-                        "url": "Google Answer Box",
-                    }
+                    evidences[i] = [
+                        {
+                            "text": f"{query}\nAnswer: {result['answerBox']['answer']}",
+                            "url": "Google Answer Box",
+                        }
+                    ]
                 else:
-                    evidences[i] = {
-                        "text": f"{query}\nAnswer: {result['answerBox']['snippet']}",
-                        "url": "Google Answer Box",
-                    }
+                    evidences[i] = [
+                        {
+                            "text": f"{query}\nAnswer: {result['answerBox']['snippet']}",
+                            "url": "Google Answer Box",
+                        }
+                    ]
+            # TODO: currently --- if there is google answer box, we only got 1 evidence, otherwise, we got multiple, this will deminish the value of the google answer.
             else:
                 results = result.get("organic", [])[:top_k]  # Choose top 5 result
-                merge_evidence_text = [f"Text: {_result['snippet']} \n Source: {_result['link']}" for _result in results]
-                merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
-                evidences[i] = {
-                    "text": "\n\n".join(merge_evidence_text),
-                    "url": "Multiple",
-                }
+
+                if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):
+                    evidences[i] += [
+                        {"text": re.sub(r"\n+", "\n", _result["snippet"]), "url": _result["link"]} for _result in results
+                    ]
 
                 # Save date for each url
                 url_to_date.update({result.get("link"): result.get("date") for result in results})
@@ -160,12 +167,9 @@ class SerperEvidenceRetriever:
         for _query in query_snippet_dict.keys():
             _query_index = query_list.index(_query)
             _snippet_list = query_snippet_dict[_query]
-            merge_evidence_text = [f"Text: {snippet} \n Source: {_url}" for snippet, _url in zip(_snippet_list, url_to_check)]
-            merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
-            evidences[_query_index] = {
-                "text": "\n\n".join(merge_evidence_text),
-                "url": "Multiple",
-            }
+            evidences[_query_index] += [
+                {"text": re.sub(r"\n+", "\n", snippet), "url": _url} for snippet, _url in zip(_snippet_list, url_to_check)
+            ]
 
         return evidences
 
