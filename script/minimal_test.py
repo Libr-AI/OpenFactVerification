@@ -12,9 +12,13 @@ red = "\033[91m"
 reset = "\033[0m"
 
 
-def minimal_test():
+def minimal_test(lang="en"):
     # Initialize the FactCheck class
-    factcheck = FactCheck()
+    prompt = "chatgpt_prompt"
+    match lang:
+        case "zh":
+            prompt = "chatgpt_prompt_zh"
+    factcheck = FactCheck(prompt=prompt)
 
     def atom_test(instance):
         response = instance["response"]
@@ -27,7 +31,7 @@ def minimal_test():
         except:  # noqa E722
             return False
 
-    with open("minimal_test.json") as f:
+    with open(f"minimal_test_{lang}.json", encoding='utf-8') as f:
         test_data = json.load(f)
     num_tests = len(test_data)
 
@@ -52,4 +56,4 @@ def minimal_test():
 
 
 if __name__ == "__main__":
-    minimal_test()
+    minimal_test("zh")
