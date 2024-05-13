@@ -56,4 +56,4 @@ def minimal_test(lang="en"):
 
 
 if __name__ == "__main__":
-    minimal_test("zh")
+    minimal_test()
