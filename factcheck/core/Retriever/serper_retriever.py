@@ -67,6 +67,7 @@ class SerperEvidenceRetriever:
 
         # get the results for queries with an answer box
         query_url_dict = {}
+        url_to_date = {}  # TODO: decide whether to use date
         _snippet_to_check = []
         for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
             if query != result.get("searchParameters").get("q"):
@@ -92,6 +93,8 @@ class SerperEvidenceRetriever:
                     "url": "Multiple",
                 }
 
+                # Save date for each url
+                url_to_date.update({result.get("link"): result.get("date") for result in results})
                 # Save query-url pair, 1 query may have multiple urls
                 query_url_dict.update({query: [result.get("link") for result in results]})
                 _snippet_to_check += [result["snippet"] for result in results]
