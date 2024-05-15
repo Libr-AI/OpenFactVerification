@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "response": "我是一个NLP科学家。",
+        "attributes": {
+            "factuality": "Nothing to check."
+        }
+    },
+    {
+        "id": 2,
+        "response": "马云创立了阿里巴巴公司。",
+        "attributes": {
+            "factuality": true
+        }
+    },
+    {
+        "id": 3,
+        "response": "埃隆·马斯克(Elon Musk)在2023年收购了Twitter，并将其更名为X。",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 4,
+        "response": "马化腾创办了京东和腾讯。",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 5,
+        "response": "人脸识别系统研究始于20世纪20年代。",
+        "attributes": {
+            "factuality": false
+        }
+    },
+    {
+        "id": 6,
+        "response": "天津大学是中国江苏的大学。",
+        "attributes": {
+            "factuality": false
+        }
+    }
+]
