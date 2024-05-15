@@ -30,7 +30,7 @@ def minimal_test(lang="en"):
         except:  # noqa E722
             return False
 
-    with open(f"minimal_test_{lang}.json", encoding='utf-8') as f:
+    with open(f"minimal_test_{lang}.json", encoding="utf-8") as f:
         test_data = json.load(f)
     num_tests = len(test_data)
 
