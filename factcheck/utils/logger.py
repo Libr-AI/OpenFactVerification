@@ -20,7 +20,7 @@ class CustomLogger:
             # If the directory does not exist, create it
             os.makedirs("./log")
         env = os.environ.get("env", "dev")
-        fh = TimedRotatingFileHandler(filename="./log/factcheck_{}.log".format(env), when="D", encoding='utf-8')
+        fh = TimedRotatingFileHandler(filename="./log/factcheck_{}.log".format(env), when="D", encoding="utf-8")
         fh.setLevel(loglevel)
         if not self.logger.handlers:
             # Create another handler for output to the console
