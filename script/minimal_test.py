@@ -15,9 +15,8 @@ reset = "\033[0m"
 def minimal_test(lang="en"):
     # Initialize the FactCheck class
     prompt = "chatgpt_prompt"
-    match lang:
-        case "zh":
-            prompt = "chatgpt_prompt_zh"
+    if lang == "zh":
+        prompt = "chatgpt_prompt_zh"
     factcheck = FactCheck(prompt=prompt)
 
     def atom_test(instance):
