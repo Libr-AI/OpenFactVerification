@@ -18,6 +18,10 @@ We welcome contributions and feedback from the community and recommend a few bes
 * New features should have appropriate documentation added alongside them.
 * Aim for code maintainability, and minimize code copying.
 * Minimal test are required before submit a PR, run `script/minimal_test.py` and all test cases are required to be passed.
+* Please make sure the code style is checked and aligned:
+    ```bash
+    pre-commit run --all-files
+    ```
 
 ### For Feature Requests
 
@@ -37,6 +41,7 @@ Loki uses [black](https://github.com/psf/black) and [flake8](https://pypi.org/pr
 ```bash
 pip install pre-commit
 pre-commit install
+pre-commit run --all-files
 ```
 
 ## How Can I Get Involved?
@@ -44,6 +49,6 @@ pre-commit install
 There are a number of distinct ways to contribute to Loki:
 
 * Implement new features or fix bugs by submitting a pull request: If you want to use a new model or retriever, or if you have an idea for a new feature, we would love to see your contributions.
-* We have our [development plan](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/development_plan.md) that outlines the roadmap for the project. If you are interested in contributing to any of the tasks, please join our [Discord](https://discord.gg/NRge6RS7) and direct message to @Haonan Li.
+* We have our [development plan](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/development_plan.md) that outlines the roadmap for the project. If you are interested in contributing to any of the tasks, please join our [Discord](https://discord.gg/ssxtFVbDdT) and direct message to @Haonan Li.
 
-We hope you find this project interesting and would like to contribute to it. If you have any questions, please feel free to reach out to us on our [Discord](https://discord.gg/NRge6RS7).
+We hope you find this project interesting and would like to contribute to it. If you have any questions, please feel free to reach out to us on our [Discord](https://discord.gg/ssxtFVbDdT).
