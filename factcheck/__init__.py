@@ -1,3 +1,4 @@
+import concurrent.futures
 import time
 import tiktoken
 
@@ -19,7 +20,7 @@ logger = CustomLogger(__name__).getlog()
 class FactCheck:
     def __init__(
         self,
-        default_model: str = "gpt-4-turbo",
+        default_model: str = "gpt-4o",
         client: str = None,
         prompt: str = "chatgpt_prompt",
         retriever: str = "serper",
@@ -76,17 +77,28 @@ class FactCheck:
         st_time = time.time()
         # step 1
         claims = self.decomposer.getclaims(doc=response, num_retries=self.num_seed_retries)
-        claim2doc = self.decomposer.restore_claims(doc=response, claims=claims, num_retries=self.num_seed_retries)
-        for i, claim in enumerate(claims):
-            logger.info(f"== response claims {i}: {claim}")
-        for claim, origin in claim2doc.items():
-            logger.info(f"== restore claims --- {claim} --- {origin}")
+        # Parallel run restore claims and checkworthy
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_claim2doc = executor.submit(
+                self.decomposer.restore_claims, doc=response, claims=claims, num_retries=self.num_seed_retries
+            )
+            # step 2
+            future_checkworthy_claims = executor.submit(
+                self.checkworthy.identify_checkworthiness, claims, num_retries=self.num_seed_retries
+            )
+            # step 3
+            future_claim_query_dict = executor.submit(self.query_generator.generate_query, claims=claims)
 
-        # step 2
-        (
-            checkworthy_claims,
-            pairwise_checkworthy,
-        ) = self.checkworthy.identify_checkworthiness(claims, num_retries=self.num_seed_retries)
+            # Wait for all futures to complete
+            claim2doc = future_claim2doc.result()
+            checkworthy_claims, pairwise_checkworthy = future_checkworthy_claims.result()
+            claim_query_dict = future_claim_query_dict.result()
+
+        checkworthy_claims_S = set(checkworthy_claims)
+        claim_query_dict = {k: v for k, v in claim_query_dict.items() if k in checkworthy_claims_S}
+
+        for i, (claim, origin) in enumerate(claim2doc.items()):
+            logger.info(f"== response claims {i} --- {claim} --- {origin}")
         for i, claim in enumerate(checkworthy_claims):
             logger.info(f"== Check-worthy claims {i}: {claim}")
 
@@ -117,8 +129,6 @@ class FactCheck:
             logger.info("== State: Done! (Nothing to check.)")
             return api_data_dict
 
-        # step 3
-        claim_query_dict = self.query_generator.generate_query(claims=checkworthy_claims)
         for k, v in claim_query_dict.items():
             logger.info(f"== Claim: {k} --- Queries: {v}")
 

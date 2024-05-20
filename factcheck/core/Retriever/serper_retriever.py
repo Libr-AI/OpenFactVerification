@@ -59,7 +59,7 @@ class SerperEvidenceRetriever:
         """
 
         # init the evidence list with None
-        evidences = [[]] * len(query_list)
+        evidences = [[] for _ in query_list]
 
         # get the response from serper
         serper_response = self._request_serper_api(query_list)
@@ -157,18 +157,18 @@ class SerperEvidenceRetriever:
             )
 
         # merge the snippets by query
-        query_snippet_dict = {}
-        for _query, _snippet in zip(query_to_check, _extended_snippet):
-            _snippet_list = query_snippet_dict.get(_query, [])
-            _snippet_list.append(_snippet)
-            query_snippet_dict[_query] = _snippet_list
+        query_snippet_url_dict = {}
+        for _query, _url, _snippet in zip(query_to_check, url_to_check, _extended_snippet):
+            _snippet_url_list = query_snippet_url_dict.get(_query, [])
+            _snippet_url_list.append((_snippet, _url))
+            query_snippet_url_dict[_query] = _snippet_url_list
 
         # extend the evidence list for each query
-        for _query in query_snippet_dict.keys():
+        for _query in query_snippet_url_dict.keys():
             _query_index = query_list.index(_query)
-            _snippet_list = query_snippet_dict[_query]
+            _snippet_url_list = query_snippet_url_dict[_query]
             evidences[_query_index] += [
-                {"text": re.sub(r"\n+", "\n", snippet), "url": _url} for snippet, _url in zip(_snippet_list, url_to_check)
+                {"text": re.sub(r"\n+", "\n", snippet), "url": _url} for snippet, _url in _snippet_url_list
             ]
 
         return evidences
