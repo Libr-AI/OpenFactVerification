@@ -174,7 +174,7 @@ class FactCheck:
                 api_claim_data["evidence"] = claim_verify_dict.get(claim, {})
                 labels = list(map(lambda x: x["relationship"], api_claim_data["evidence"]))
                 if labels.count("SUPPORTS") + labels.count("REFUTES") == 0:
-                    api_claim_data["factuality"] = "No evidence found."
+                    api_claim_data["factuality"] = 1  # "No evidence found."
                 else:
                     api_claim_data["factuality"] = labels.count("SUPPORTS") / (
                         labels.count("REFUTES") + labels.count("SUPPORTS")

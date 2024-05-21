@@ -62,6 +62,7 @@ class SerperEvidenceRetriever:
         evidences = [[] for _ in query_list]
 
         # get the response from serper
+        # TODO: Can send up to 100 queries once
         serper_response = self._request_serper_api(query_list)
 
         if serper_response is None:
