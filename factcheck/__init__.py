@@ -28,7 +28,7 @@ class FactCheck:
         checkworthy_model: str = None,
         query_generator_model: str = None,
         evidence_retrieval_model: str = None,
-        claim_verify_model: str = "gpt-3.5-turbo",
+        claim_verify_model: str = None,  # "gpt-3.5-turbo",
         api_config: dict = None,
         num_seed_retries: int = 3,
     ):
