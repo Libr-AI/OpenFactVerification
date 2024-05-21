@@ -181,8 +181,10 @@ class FactCheck:
                     )
             api_claim_data_list.append(api_claim_data)
         api_data_dict["claim_details"] = api_claim_data_list
+
+        valid_claims = list(filter(lambda x: not isinstance(x["factuality"], str), api_claim_data_list))
         api_data_dict["summary"] = {
-            "num_claims": len(api_data_dict["step_info"]["1_restore"]),
-            # "num_supported_claims": len(list(filter(lambda x: x["factuality"] > 0.5, api_claim_data_list))),
+            "num_claims": len(valid_claims),
+            "overall_factuality": sum(map(lambda x: x["factuality"], valid_claims)) / len(valid_claims),
         }
         return api_data_dict
