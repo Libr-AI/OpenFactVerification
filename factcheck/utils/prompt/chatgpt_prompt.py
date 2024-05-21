@@ -15,23 +15,42 @@ Text: {doc}
 Output:
 """
 
-restore_prompt = """Given a text and a list of facts derived from the text, your task is to identify the corresponding words in the text that derive each fact.
-For each fact, please find the minimal span of text that contains the information necessary to derive the fact. The answer should be a JSON dict where the keys are the facts and the values are the corresponding text spans.
+# restore_prompt = """Given a text and a list of facts derived from the text, your task is to identify the corresponding words in the text that derive each fact.
+# For each fact, please find the minimal continues span in the original text that contains the information to derive the fact. The answer should be a JSON dict where the keys are the facts and the values are the corresponding spans copied from the original text.
+#
+# For example,
+# Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
+# Facts: ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]
+#
+# Output:
+# {{"Mary is a five-year old girl.":"Mary is a five-year old girl",
+# "Mary likes playing piano.":"she likes playing piano",
+# "Mary doesn't like cookies.":"she doesn't like cookies."]
+#
+# Text: {doc}
+# Facts: {claims}
+# Output:
+# """
+
+# use this for demo
+restore_prompt = """Given a text and a list of facts derived from the text, your task is to split the text into chunks that derive each fact.
+For each fact, please find the corresponding continues span in the original text that contains the information to derive the fact. The answer should be a JSON dict where the keys are the facts and the values are the corresponding spans copied from the original text.
+Please make sure the returned spans can be concatenated to the full original doc.
 
 For example,
 Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
 Facts: ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]
 
 Output:
-{{"Mary is a five-year old girl.":"Mary is a five-year old girl",
+{{"Mary is a five-year old girl.":"Mary is a five-year old girl,",
 "Mary likes playing piano.":"she likes playing piano",
-"Mary doesn't like cookies.":"she doesn't like cookies."]
+"Mary doesn't like cookies.":"and she doesn't like cookies."]
 
 Text: {doc}
 Facts: {claims}
 Output:
-"""
 
+"""
 
 checkworthy_prompt = """
 Your task is to evaluate each provided statement to determine if it presents information whose factuality can be objectively verified by humans, irrespective of the statement's current accuracy. Consider the following guidelines:

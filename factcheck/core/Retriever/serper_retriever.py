@@ -104,7 +104,7 @@ class SerperEvidenceRetriever:
                 url_to_date.update({result.get("link"): result.get("date") for result in results})
                 # Save query-url pair, 1 query may have multiple urls
                 query_url_dict.update({query: [result.get("link") for result in results]})
-                _snippet_to_check += [result["snippet"] for result in results]
+                _snippet_to_check += [result["snippet"] if "snippet" in result else "" for result in results]
 
         # return if there is no snippet to check or snippet_extend_flag is False
         if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):

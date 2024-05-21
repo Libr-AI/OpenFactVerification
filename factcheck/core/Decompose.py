@@ -85,6 +85,24 @@ class Decompose:
                     claim2doc_detail[claim] = {"text": sent, "start": st, "end": st + len(sent)}
                 else:
                     flag = False
+
+            cur_pos = -1
+            texts = []
+            for k, v in claim2doc_detail.items():
+                if v["start"] < cur_pos + 1 and v["end"] > cur_pos:
+                    v["start"] = cur_pos + 1
+                    flag = False
+                elif v["start"] < cur_pos + 1 and v["end"] <= cur_pos:
+                    v["start"] = v["end"]  # temporarily ignore this span
+                    flag = False
+                elif v["start"] > cur_pos + 1:
+                    v["start"] = cur_pos + 1
+                    flag = False
+                v["text"] = doc[v["start"] : v["end"]]
+                texts.append(v["text"])
+                claim2doc_detail[k] = v
+                cur_pos = v["end"]
+
             return claim2doc_detail, flag
 
         if prompt is None:
