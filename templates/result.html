@@ -97,23 +97,23 @@
 
   <div class="overview">
     <h2>Response: {{ responses.response }}</h2>
-    <h2>Factuality: {{ responses.factuality }}</h2>
+    <h2>Factuality: {{ responses.summary.overall_factuality }}</h2>
   </div>
 
-  {% for key, value in responses['step_info']["5_claim_verify"].items() %}
+  {% for claim in responses['claim_details'] %}
   <div>
     <div class=" claim">
-      <h3>Claim: {{ key }} </h3>
-      <p><strong>Factuality:</strong> {{ value.factuality }}</p>
-      <p><strong>Error:</strong> {{ value.error }}</p>
-      <p><strong>Correction:</strong> {{ value.correction }}</p>
-      <p><strong>Reasoning:</strong> {{ value.reasoning }}</p>
-      <p><strong>Evidences:</strong></p>
+      <h3>Claim: {{ claim.claim }} </h3>
+      <h4><strong>Factuality:</strong> {{ claim.factuality }}</h4>
+      <h4><strong>Evidences:</strong></h4>
       <ul>
-        {% for evidence in value.evidence %}
+        {% for evidence in claim.evidence %}
         <div class=" evidence">
           <p><strong>Evidence-{{ loop.index }}:</strong>
-          <p class="evidence-text pre-wrap">{{evidence.text}}</p>
+            <p>{{evidence.evidence.text}}</p>
+            <p class="evidence-text pre-wrap">{{evidence.evidence.url}}</p>
+            <p><strong>Relationship:&nbsp;</strong>{{evidence.relationship}}</p>
+            <p><strong>Reasoning:&nbsp;</strong>{{evidence.reasoning}}</p>
           </p>
         </div>
         {% endfor %}
