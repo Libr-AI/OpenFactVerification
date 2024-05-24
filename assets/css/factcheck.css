@@ -1,0 +1,44 @@
+.controversial-span {
+    padding: 2px;
+    text-decoration: underline wavy rgba(255, 197, 61, 0.996);
+    border-bottom: 2px solid rgba(255, 197, 61, 0.996);
+    cursor: pointer;
+}
+
+.controversial-span:hover {
+    padding: 2px;
+    text-decoration: underline wavy rgba(255, 197, 61, 0.996);
+    border-bottom: 2px solid rgba(255, 197, 61, 0.996);
+    background: rgb(217, 217, 217);
+    cursor: pointer;
+}
+
+.refutes-span {
+    padding: 2px;
+    text-decoration: underline wavy rgba(209, 2, 0, 0.533);
+    border-bottom: 2px solid rgba(209, 2, 0, 0.533);
+    cursor: pointer;
+}
+
+.refutes-span:hover {
+    padding: 2px;
+    text-decoration: underline wavy rgba(209, 2, 0, 0.533);
+    border-bottom: 2px solid rgba(209, 2, 0, 0.533);
+    background: rgb(217, 217, 217);
+    cursor: pointer;
+}
+
+.support-span {
+    padding: 2px;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255, 197, 61, 0);
+    cursor: pointer;
+}
+
+.support-span:hover {
+    padding: 2px;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255, 197, 61, 0);
+    background: rgb(217, 217, 217);
+    cursor: pointer;
+}
