@@ -3,7 +3,7 @@ exclude: |
     (?x)^(
       demo_data/|
       templates/|
-      static/|
+      assets/|
       fig/
     )
 repos:
