@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify
+from factcheck.utils.llmclient import CLIENTS
 import argparse
 import json
 
@@ -34,42 +35,21 @@ def filter_evidences(input_dict, target_string, key):
 app.jinja_env.filters["filter_evidences"] = filter_evidences
 
 
-# Claim statistics
-def claim_statistic(response):
-    return {
-        "total_claims": len(response["claim_details"]),
-        "well_supported_claims": len([claim for claim in response["claim_details"] if (claim["factuality"] == 1)]),
-        "controversial_claims": len([claim for claim in response["claim_details"] if (0 < claim["factuality"] < 1)]),
-        "conflicted_claims": len([claim for claim in response["claim_details"] if (claim["factuality"] == 0)]),
-    }
-
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         response = request.form["response"]
         if response == "":
             return render_template("input.html")
-        response = factcheck_instance.check_response(response)
+        response = factcheck_instance.check_text(response)
 
         # save the response json file
         with open("assets/response.json", "w") as f:
             json.dump(response, f)
 
-        claim_sta = claim_statistic(response)
-        return render_template("LibrAI_fc.html", responses=response, shown_claim=0, claim_statistic=claim_sta)
+        return render_template("LibrAI_fc.html", responses=response, shown_claim=0)
 
     return render_template("input.html")
-
-
-# @app.route("/", methods=["GET", "POST"])
-# def index():
-#     # load the response json file
-#     import json
-#     with open('response.json') as f:
-#         response = json.load(f)
-#     claim_sta=claim_statistic(response)
-#     return render_template("LibrAI_fc.html", responses=response, shown_claim=0, claim_statistic=claim_sta)
 
 
 @app.route("/shownClaim/<content_id>")
@@ -80,15 +60,17 @@ def get_content(content_id):
     with open("assets/response.json") as f:
         response = json.load(f)
 
-    claim_sta = claim_statistic(response)
-    return render_template("LibrAI_fc.html", responses=response, shown_claim=(int(content_id) - 1), claim_statistic=claim_sta)
+    return render_template("LibrAI_fc.html", responses=response, shown_claim=(int(content_id) - 1))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
+    parser.add_argument("--model", type=str, default="gpt-4o")
+    parser.add_argument("--client", type=str, default=None, choices=CLIENTS.keys())
     parser.add_argument("--prompt", type=str, default="chatgpt_prompt")
     parser.add_argument("--retriever", type=str, default="serper")
+    parser.add_argument("--modal", type=str, default="text")
+    parser.add_argument("--input", type=str, default="demo_data/text.txt")
     parser.add_argument("--api_config", type=str, default="factcheck/config/api_config.yaml")
     args = parser.parse_args()
 
