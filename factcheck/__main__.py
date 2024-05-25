@@ -27,7 +27,7 @@ def check(args):
     )
 
     content = modal_normalization(args.modal, args.input)
-    res = factcheck.check_response(content)
+    res = factcheck.check_text(content)
     print(json.dumps(res, indent=4))
 
     # Save the results to lark (only for local testing)

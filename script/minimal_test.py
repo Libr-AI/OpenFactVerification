@@ -18,7 +18,7 @@ def minimal_test():
 
     def atom_test(instance):
         response = instance["response"]
-        res = factcheck.check_response(response)
+        res = factcheck.check_text(response)
         try:
             for k, v in instance["attributes"].items():
                 print(f"{k}: {res[k]}, {v}")

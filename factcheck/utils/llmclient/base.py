@@ -4,6 +4,8 @@ from abc import abstractmethod
 from functools import partial
 from collections import deque
 
+from ..data_class import TokenUsage
+
 
 class BaseClient:
     def __init__(
@@ -19,11 +21,24 @@ class BaseClient:
         self.request_window = request_window
         self.traffic_queue = deque()
         self.total_traffic = 0
+        self.usage = TokenUsage(model=model)
 
     @abstractmethod
     def _call(self, messages: str):
         """Internal function to call the API."""
         pass
+
+    @abstractmethod
+    def _log_usage(self):
+        """Log the usage of tokens, should be used in each client's _call method."""
+        pass
+
+    def get_usage(self):
+        return self.usage
+
+    def reset_usage(self):
+        self.usage.prompt_tokens = 0
+        self.usage.completion_tokens = 0
 
     @abstractmethod
     def construct_message_list(self, prompt_list: list[str]) -> list[str]:

@@ -25,7 +25,20 @@ class GPTClient(BaseClient):
             messages=messages,
         )
         r = response.choices[0].message.content
+
+        if hasattr(response, "usage"):
+            self._log_usage(usage_dict=response.usage)
+        else:
+            print("Warning: ChatGPT API Usage is not logged.")
+
         return r
+
+    def _log_usage(self, usage_dict):
+        try:
+            self.usage.prompt_tokens += usage_dict.prompt_tokens
+            self.usage.completion_tokens += usage_dict.completion_tokens
+        except:  # noqa E722
+            print("Warning: prompt_tokens or completion_token not found in usage_dict")
 
     def get_request_length(self, messages):
         # TODO: check if we should return the len(menages) instead

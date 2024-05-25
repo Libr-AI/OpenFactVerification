@@ -30,7 +30,7 @@ class Decompose:
         sentence_list = [s.strip() for s in sentences if len(s.strip()) >= 3]
         return sentence_list
 
-    def getclaims(self, doc: str, num_retries: int = 3, prompt: str = None):
+    def getclaims(self, doc: str, num_retries: int = 3, prompt: str = None) -> list[str]:
         """Use GPT to decompose a document into claims
 
         Args:
@@ -45,6 +45,7 @@ class Decompose:
         else:
             user_input = prompt.format(doc=doc).strip()
 
+        claims = None
         messages = self.llm_client.construct_message_list([user_input])
         for i in range(num_retries):
             response = self.llm_client.call(
@@ -55,21 +56,23 @@ class Decompose:
             try:
                 claims = eval(response)["claims"]
                 if isinstance(claims, list) and len(claims) > 0:
-                    return claims
+                    break
             except Exception as e:
                 logger.error(f"Parse LLM response error {e}, response is: {response}")
                 logger.error(f"Parse LLM response error, prompt is: {messages}")
-
-        logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
-        claims = self.doc2sent(doc)
+        if isinstance(claims, list):
+            return claims
+        else:
+            logger.info("It does not output a list of sentences correctly, return self.doc2sent_tool split results.")
+            claims = self.doc2sent(doc)
         return claims
 
-    def restore_claims(self, doc: str, claims: str, num_retries: int = 3, prompt: str = None):
+    def restore_claims(self, doc: str, claims: list, num_retries: int = 3, prompt: str = None) -> dict[str, dict]:
         """Use GPT to map claims back to the document
 
         Args:
             doc (str): the document to be decomposed into claims
-            claims (str): a list of claims to be mapped back to the document
+            claims (list[str]): a list of claims to be mapped back to the document
             num_retries (int, optional): maximum attempts for GPT to decompose the document into claims. Defaults to 3.
 
         Returns:

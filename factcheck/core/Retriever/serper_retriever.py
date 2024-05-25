@@ -11,16 +11,17 @@ logger = CustomLogger(__name__).getlog()
 
 
 class SerperEvidenceRetriever:
-    def __init__(self, api_config: dict = None):
+    def __init__(self, llm_client, api_config: dict = None):
         """Initialize the SerperEvidenceRetrieve class"""
         self.lang = "en"
         self.serper_key = api_config["SERPER_API_KEY"]
+        self.llm_client = llm_client
 
-    def retrieve_evidence(self, claim_query_dict, top_k: int = 5, snippet_extend_flag: bool = True):
+    def retrieve_evidence(self, claim_queries_dict, top_k: int = 5, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given claims
 
         Args:
-            claim_query_dict (dict): a dictionary of claims and their corresponding queries.
+            claim_queries_dict (dict): a dictionary of claims and their corresponding queries.
             top_k (int, optional): the number of top relevant results to retrieve. Defaults to 5.
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
@@ -28,15 +29,14 @@ class SerperEvidenceRetriever:
             dict: a dictionary of claims and their corresponding evidences.
         """
         logger.info("Collecting evidences ...")
-        claim_query_dict_L = list(claim_query_dict.items())
-        query_list = [y for x in claim_query_dict_L for y in x[1]]
+        query_list = [y for x in claim_queries_dict.items() for y in x[1]]
         evidence_list = self._retrieve_evidence_4_all_claim(
             query_list=query_list, top_k=top_k, snippet_extend_flag=snippet_extend_flag
         )
 
         i = 0
         claim_evidence_dict = {}
-        for claim, queries in claim_query_dict_L:
+        for claim, queries in claim_queries_dict.items():
             evidences_per_query_L = evidence_list[i : i + len(queries)]
             claim_evidence_dict[claim] = [e for evidences in evidences_per_query_L for e in evidences]
             i += len(queries)
