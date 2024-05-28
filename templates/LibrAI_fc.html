@@ -75,6 +75,10 @@
                                         <span class="refutes-span" onclick="switchClaim({{ loop.index }})">
                                     {% elif claim_detail['factuality'] == 1 %}
                                         <span class="support-span" onclick="switchClaim({{ loop.index }})">
+                                    {% elif claim_detail['factuality'] == 'Nothing to check' %}
+                                        <span class="support-span">
+                                    {% elif claim_detail['factuality'] == 'No evidence found' %}
+                                        <span class="support-span">
                                     {% else %}
                                         <span class="controversial-span" onclick="switchClaim({{ loop.index }})">
                                     {% endif %}
