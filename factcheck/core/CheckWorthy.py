@@ -37,18 +37,18 @@ class Checkworthy:
         for i in range(num_retries):
             response = self.llm_client.call(messages, num_retries=1, seed=42 + i)
             try:
-                results = eval(response)
+                claim2checkworthy = eval(response)
                 valid_answer = list(
                     filter(
                         lambda x: x[1].startswith("Yes") or x[1].startswith("No"),
-                        results.items(),
+                        claim2checkworthy.items(),
                     )
                 )
-                checkworthy_claims = list(filter(lambda x: x[1].startswith("Yes"), results.items()))
+                checkworthy_claims = list(filter(lambda x: x[1].startswith("Yes"), claim2checkworthy.items()))
                 checkworthy_claims = list(map(lambda x: x[0], checkworthy_claims))
-                assert len(valid_answer) == len(results)
+                assert len(valid_answer) == len(claim2checkworthy)
                 break
             except Exception as e:
                 logger.error(f"====== Error: {e}, the LLM response is: {response}")
                 logger.error(f"====== Our input is: {messages}")
-        return checkworthy_claims, results
+        return checkworthy_claims, claim2checkworthy

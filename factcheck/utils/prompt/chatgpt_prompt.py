@@ -15,6 +15,43 @@ Text: {doc}
 Output:
 """
 
+# restore_prompt = """Given a text and a list of facts derived from the text, your task is to identify the corresponding words in the text that derive each fact.
+# For each fact, please find the minimal continues span in the original text that contains the information to derive the fact. The answer should be a JSON dict where the keys are the facts and the values are the corresponding spans copied from the original text.
+#
+# For example,
+# Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
+# Facts: ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]
+#
+# Output:
+# {{"Mary is a five-year old girl.":"Mary is a five-year old girl",
+# "Mary likes playing piano.":"she likes playing piano",
+# "Mary doesn't like cookies.":"she doesn't like cookies."]
+#
+# Text: {doc}
+# Facts: {claims}
+# Output:
+# """
+
+# use this for demo
+restore_prompt = """Given a text and a list of facts derived from the text, your task is to split the text into chunks that derive each fact.
+For each fact, please find the corresponding continues span in the original text that contains the information to derive the fact. The answer should be a JSON dict where the keys are the facts and the values are the corresponding spans copied from the original text.
+Please make sure the returned spans can be concatenated to the full original doc.
+
+For example,
+Text: Mary is a five-year old girl, she likes playing piano and she doesn't like cookies.
+Facts: ["Mary is a five-year old girl.", "Mary likes playing piano.", "Mary doesn't like cookies."]
+
+Output:
+{{"Mary is a five-year old girl.":"Mary is a five-year old girl,",
+"Mary likes playing piano.":"she likes playing piano",
+"Mary doesn't like cookies.":"and she doesn't like cookies."]
+
+Text: {doc}
+Facts: {claims}
+Output:
+
+"""
+
 checkworthy_prompt = """
 Your task is to evaluate each provided statement to determine if it presents information whose factuality can be objectively verified by humans, irrespective of the statement's current accuracy. Consider the following guidelines:
 1. Opinions versus Facts: Distinguish between opinions, which are subjective and not verifiable, and statements that assert factual information, even if broad or general. Focus on whether there's a factual claim that can be investigated.
@@ -62,53 +99,45 @@ Output:
 """
 
 verify_prompt = """
-Your task is to evaluate the accuracy of a provided statement using the accompanying evidence. Carefully review the evidence, noting that it may vary in detail and sometimes present conflicting information. Your judgment should be informed by this evidence, taking into account its relevance and reliability.
-
-Keep in mind that a lack of detail in the evidence does not necessarily indicate that the statement is inaccurate. When assessing the statement's factuality, distinguish between errors and areas where the evidence supports the statement.
-
+Your task is to decide whether the evidence supports, refutes, or is irrelevant to the claim. Carefully review the evidence, noting that it may vary in detail and sometimes present conflicting information. Your judgment should be informed by this evidence, taking into account its relevance and reliability.
 Please structure your response in JSON format, including the following four keys:
 - "reasoning": explain the thought process behind your judgment.
-- "error": none if the text is factual; otherwise, identify any specific inaccuracies in the statement.
-- "correction": none if the text is factual; otherwise, provide corrections to any identified inaccuracies, using the evidence to support your corrections.
-- "factuality": true if the given text is factual, false otherwise, indicating whether the statement is factual, or non-factual based on the evidence.
-
-For example:
+- "relationship": the stance label, which can be one of "SUPPORTS", "REFUTES", or "IRRELEVANT".
+For example,
 Input:
-[text]: MBZUAI is located in Abu Dhabi, United Arab Emirates.
+[claim]: MBZUAI is located in Abu Dhabi, United Arab Emirates.
 [evidence]: Where is MBZUAI located?\nAnswer: Masdar City - Abu Dhabi - United Arab Emirates
-
 Output:
 {{
-    "reasoning": "The evidence confirms that MBZUAI is located in Masdar City, Abu Dhabi, United Arab Emirates, so the statement is factually correct",
-    "error": none,
-    "correction": none,
-    "factuality": true
+    "reasoning": "The evidence confirms that MBZUAI is located in Masdar City, Abu Dhabi, United Arab Emirates, so the relationship is SUPPORTS.",
+    "relationship": "SUPPORTS"
 }}
-
-
 Input:
-[text]: Copper reacts with ferrous sulfate (FeSO4).
+[claim]: Copper reacts with ferrous sulfate (FeSO4).
 [evidence]: Copper is less reactive metal. It has positive value of standard reduction potential. Metal with high standard reduction potential can not displace other metal with low standard reduction potential values. Hence copper can not displace iron from ferrous sulphate solution. So no change will take place.
-
 Output:
 {{
-    "reasoning": "The evidence provided confirms that copper cannot displace iron from ferrous sulphate solution, and no change will take place.",
-    "error": "Copper does not react with ferrous sulfate as stated in the text.",
-    "correction": "Copper does not react with ferrous sulfate as it cannot displace iron from ferrous sulfate solution.",
-    "factuality": false
+    "reasoning": "The evidence provided confirms that copper cannot displace iron from ferrous sulphate solution, and no change will take place. Therefore, the evidence refutes the claim",
+    "relationship": "REFUTES"
 }}
-
-
+Input:
+[claim]: Apple is a leading technology company in UK.
+[evidence]: International Business Machines Corporation, nicknamed Big Blue, is an American multinational technology company headquartered in Armonk, New York and present in over 175 countries.
+Output:
+{{
+    "reasoning": "The evidence is about IBM, while the claim is about Apple. Therefore, the evidence is irrelevant to the claim",
+    "relationship": "IRRELEVANT"
+}}
 Input
-[text]: {claim}
+[claim]: {claim}
 [evidences]: {evidence}
-
 Output:
 """
 
 
 class ChatGPTPrompt:
     decompose_prompt = decompose_prompt
+    restore_prompt = restore_prompt
     checkworthy_prompt = checkworthy_prompt
     qgen_prompt = qgen_prompt
     verify_prompt = verify_prompt

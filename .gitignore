@@ -155,6 +155,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+debug.ipynb
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -169,6 +170,8 @@ log/
 # Mac
 *.DS_Store
 
+# lark key and utils
+factcheck/utils/lark.py
 # openai_key_file
 factcheck/utils/openai_key.py
 factcheck/config/secret_dict.py
@@ -181,3 +184,5 @@ faiss.index
 
 # test data
 demo_data/test_api_config.yaml
+assets/response.json
+api_config.yaml

@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+	<meta charset="utf-8">
+	<title>LibrAI-Eval | Fact-checking</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	
+	<!-- ================== BEGIN core-css ================== -->
+    <link href="{{ url_for('static', filename='css/vendor.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/app.min.css') }}" rel="stylesheet">
+    <!-- <link href="assets/css/vendor.min.css" rel="stylesheet"> -->
+	<!-- <link href="assets/css/app.min.css" rel="stylesheet"> -->
+	<!-- ================== END core-css ================== -->
+	
+	<!-- ================== BEGIN page-css ================== -->
+	<!-- <link href="assets/css/factcheck.css" rel="stylesheet"> -->
+    <link href="{{ url_for('static', filename='css/factcheck.css') }}" rel="stylesheet">
+	<!-- ================== END page-css ================== -->
+
+</head>
+<body>
+<body class="theme-gray-100">
+
+	<!-- BEGIN #app -->
+	<div id="app" class="app app-without-sidebar" >
+        <!-- BEGIN #header -->
+		<div id="header" class="app-header">
+			
+			<!-- BEGIN brand -->
+			<div class="brand">
+				<a href="index.html" class="brand-logo">
+					<!-- <span class="brand-img"> -->
+					<span>
+						<img src="{{ url_for('static', filename='librai_librai.png') }}" alt="logo" height="20">
+						<!-- <span class="brand-img-text text-theme">H</span> -->
+					</span>
+					<span class="brand-text">    LIBRAI TEC</span>
+				</a>
+			</div>
+			<!-- END brand -->
+			
+			<!-- BEGIN menu -->
+			<div class="menu">
+				<div class="menu-item dropdown dropdown-mobile-full">
+					<a href="#" data-bs-toggle="dropdown" data-bs-display="static" class="menu-link">
+						<div class="menu-img online">
+							<img src="{{ url_for('static', filename='XH.jpeg') }}" alt="Profile" height="60">
+						</div>
+						<div class="menu-text d-sm-block d-none w-170px">team@librai.tech</div>
+					</a>
+				</div>
+			</div>
+			<!-- END menu -->
+		</div>
+		<!-- END #header -->
+
+		<!-- BEGIN #content -->
+		<div id="content" class="app-content" >
+			<ul class="breadcrumb">
+				<li class="breadcrumb-item"><a href="#">LibrAI</a></li>
+				<li class="breadcrumb-item active">Fact-checking</li>
+			</ul>
+            <div class="row">
+                <div class="col-xl-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div>
+                                <!-- for statement -->
+                                {% for claim_detail in responses['claim_detail'] %}
+                                    <sup>{{ loop.index }}</sup>
+                                    {% if claim_detail['factuality'] == 0 %}
+                                        <span class="refutes-span" onclick="switchClaim({{ loop.index }})">
+                                    {% elif claim_detail['factuality'] == 1 %}
+                                        <span class="support-span" onclick="switchClaim({{ loop.index }})">
+                                    {% elif claim_detail['factuality'] == 'Nothing to check' %}
+                                        <span class="support-span">
+                                    {% elif claim_detail['factuality'] == 'No evidence found' %}
+                                        <span class="support-span">
+                                    {% else %}
+                                        <span class="controversial-span" onclick="switchClaim({{ loop.index }})">
+                                    {% endif %}
+                                        <span class="fs-4">
+                                            {{claim_detail['origin_text']}}
+                                        </span>
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="card-arrow">
+                            <div class="card-arrow-top-left"></div>
+                            <div class="card-arrow-top-right"></div>
+                            <div class="card-arrow-bottom-left"></div>
+                            <div class="card-arrow-bottom-right"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6>
+                                <strong>Claim:&nbsp;</strong>: {{ responses['claim_detail'][shown_claim]["claim"] }}
+                            </h6>
+                            <h6 class="card-title">
+                                Evidences <span class="badge bg-danger">{{ responses['claim_detail'][shown_claim]["evidences"] | length }}</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-pills mb-3" id="pills-tab">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pills-refutes-tab" data-bs-toggle="pill" href="#pills-refutes">
+                                        <p class="text-danger">REFUTES ({{ responses['claim_detail'][shown_claim]["evidences"] | count_occurrences("REFUTES", "relationship") }})</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-contextualizes-tab" data-bs-toggle="pill" href="#pills-contextualizes">
+                                        <p class="text-warning">CONTEXTUALIZES ({{ responses['claim_detail'][shown_claim]["evidences"] | count_occurrences("IRRELEVANT", "relationship") }})</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-supports-tab" data-bs-toggle="pill" href="#pills-supports">
+                                        <p class="text-success">Supports ({{ responses['claim_detail'][shown_claim]["evidences"] | count_occurrences("SUPPORTS", "relationship") }})</p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade show active" id="pills-refutes">
+                                    <div class="accordion" id="accordionRefutes">
+                                        {% for evi in responses['claim_detail'][shown_claim]["evidences"] | filter_evidences("REFUTES", "relationship")  %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingRef{{ loop.index }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRefutes{{ loop.index }}">
+                                                    <p class="text-danger">
+                                                        REFUTES - {{ loop.index }}
+                                                    </p>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseRefutes{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordionRefutes">
+                                                <div class="accordion-body">
+                                                    <p><strong>Evidence:&nbsp;</strong>{{ evi["text"] }}</p>
+                                                    <p><strong>Source:&nbsp;</strong>
+                                                        <span class="evidence-text pre-wrap">{{evi.url}}</span>
+                                                    </p>
+                                                    <p><strong>Reasoning:&nbsp;</strong>{{evi.reasoning}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-contextualizes">
+                                    <div class="accordion" id="accordionContextualizes">
+                                        {% for evi in responses['claim_detail'][shown_claim]["evidences"] | filter_evidences("IRRELEVANT", "relationship")  %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingContext{{ loop.index }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContextualizes{{ loop.index }}">
+                                                    <p class="text-warning">
+                                                        CONTEXTUALIZES - {{ loop.index }}
+                                                    </p>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseContextualizes{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordionContextualizes">
+                                                <div class="accordion-body">
+                                                    <p><strong>Evidence:&nbsp;</strong>{{ evi["text"] }}</p>
+                                                    <p><strong>Source:&nbsp;</strong>
+                                                        <span class="evidence-text pre-wrap">{{evi.url}}</span>
+                                                    </p>
+                                                    <p><strong>Reasoning:&nbsp;</strong>{{evi.reasoning}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="pills-supports">
+                                    <div class="accordion" id="accordionSupports">
+                                        {% for evi in responses['claim_detail'][shown_claim]["evidences"] | filter_evidences("SUPPORTS", "relationship")  %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingSupport{{ loop.index }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSupports{{ loop.index }}">
+                                                    <p class="text-success">
+                                                        SUPPORTS - {{ loop.index }}
+                                                    </p>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseSupports{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordionSupports">
+                                                <div class="accordion-body">
+                                                    <p><strong>Evidence:&nbsp;</strong>{{ evi["text"] }}</p>
+                                                    <p><strong>Source:&nbsp;</strong>
+                                                        <span class="evidence-text pre-wrap">{{evi.url}}</span>
+                                                    </p>
+                                                    <p><strong>Reasoning:&nbsp;</strong>{{evi.reasoning}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-arrow">
+                            <div class="card-arrow-top-left"></div>
+                            <div class="card-arrow-top-right"></div>
+                            <div class="card-arrow-bottom-left"></div>
+                            <div class="card-arrow-bottom-right"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card m-1">
+                                <div class="card-header">
+                                    <h6 class="card-title">
+                                        Overall Factuality
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    {{ 100 * responses["summary"]["factuality"] }}%
+                                </div>
+                                <div class="card-arrow">
+                                    <div class="card-arrow-top-left"></div>
+                                    <div class="card-arrow-top-right"></div>
+                                    <div class="card-arrow-bottom-left"></div>
+                                    <div class="card-arrow-bottom-right"></div>
+                                </div>
+                            </div>
+                            <div class="card m-1">
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6>
+                                                    {{ responses["summary"]["num_claims"] }}
+                                                </h6>
+                                            </div>
+                                            <div><h7>Detected claims</h7></div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6>
+                                                    <p class="text-success-emphasis">{{ responses["summary"]["num_supported_claims"] }}</p>
+                                                </h6>
+                                            </div>
+                                            <div><h7>Well Supported</h7></div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6>
+                                                    <p class="text-danger-emphasis">{{ responses["summary"]["num_refuted_claims"] }}</p>
+                                                </h6>
+                                            </div>
+                                            <div><h7>Conflict</h7></div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div>
+                                                <h6>
+                                                    <p class="text-warning">{{ responses["summary"]["num_controversial_claims"] }}</p>
+                                                </h6>
+                                            </div>
+                                            <div><h7>Controversial</h7></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-arrow">
+                                    <div class="card-arrow-top-left"></div>
+                                    <div class="card-arrow-top-right"></div>
+                                    <div class="card-arrow-bottom-left"></div>
+                                    <div class="card-arrow-bottom-right"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-arrow">
+                            <div class="card-arrow-top-left"></div>
+                            <div class="card-arrow-top-right"></div>
+                            <div class="card-arrow-bottom-left"></div>
+                            <div class="card-arrow-bottom-right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+		</div>
+		<!-- END #content -->
+		<!-- BEGIN btn-scroll-top -->
+		<a href="#" data-toggle="scroll-to-top" class="btn-scroll-top fade"><i class="fa fa-arrow-up"></i></a>
+		<!-- END btn-scroll-top -->
+		
+	</div>
+	<!-- END #app -->
+	<script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+          document.querySelectorAll('.evidence-text').forEach((element) => {
+            element.innerHTML = convertUrlsToLinks(element.innerHTML)
+          })
+        })
+        function convertUrlsToLinks (text) {
+          const urlPattern = /(\bhttps?:\/\/[^\s]+)/g
+          return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>')
+        }
+        function switchClaim (id) {
+          window.location.href = "/shownClaim/"+id;
+        }
+    </script>
+	<!-- ================== BEGIN core-js ================== -->
+	<!-- <script src="assets/js/vendor.min.js"></script> -->
+	<!-- <script src="assets/js/app.min.js"></script> -->
+    <script src="{{ url_for('static', filename='/js/vendor.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/js/app.min.js') }}"></script>
+	<!-- ================== END core-js ================== -->
+	
+	
+</body>
+</html>

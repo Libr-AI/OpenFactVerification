@@ -27,13 +27,21 @@ def check(args):
     )
 
     content = modal_normalization(args.modal, args.input)
-    res = factcheck.check_response(content)
-    print(json.dumps(res["step_info"], indent=4))
+    res = factcheck.check_text(content)
+    print(json.dumps(res, indent=4))
+
+    # Save the results to lark (only for local testing)
+    try:
+        from factcheck.utils import lark
+
+        lark.save_json_to_lark_by_level(res)
+    except:  # noqa
+        pass
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="gpt-4-0125-preview")
+    parser.add_argument("--model", type=str, default="gpt-4o")
     parser.add_argument("--client", type=str, default=None, choices=CLIENTS.keys())
     parser.add_argument("--prompt", type=str, default="chatgpt_prompt")
     parser.add_argument("--retriever", type=str, default="serper")

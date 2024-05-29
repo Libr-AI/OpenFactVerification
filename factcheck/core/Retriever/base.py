@@ -8,7 +8,7 @@ logger = CustomLogger(__name__).getlog()
 
 
 class BaseRetriever:
-    def __init__(self, api_config: dict = None):
+    def __init__(self, llm_client, api_config: dict = None):
         """Initialize the EvidenceRetrieve class."""
         import spacy
 
@@ -27,6 +27,7 @@ class BaseRetriever:
         self.sliding_distance = 8
         self.max_passages_per_search_result_to_return = 5
         assert self.sentences_per_passage > self.sliding_distance
+        self.llm_client = llm_client
 
     def set_lang(self, lang: str):
         """Set the language for evidence retrieval.

@@ -4,7 +4,7 @@ exclude: |
       factcheck/utils/prompt/|
       demo_data/|
       templates/|
-      static/|
+      assets/|
       fig/
     )
 repos:

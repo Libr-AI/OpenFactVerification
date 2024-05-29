@@ -11,16 +11,17 @@ logger = CustomLogger(__name__).getlog()
 
 
 class SerperEvidenceRetriever:
-    def __init__(self, api_config: dict = None):
+    def __init__(self, llm_client, api_config: dict = None):
         """Initialize the SerperEvidenceRetrieve class"""
         self.lang = "en"
         self.serper_key = api_config["SERPER_API_KEY"]
+        self.llm_client = llm_client
 
-    def retrieve_evidence(self, claim_query_dict, top_k: int = 5, snippet_extend_flag: bool = True):
+    def retrieve_evidence(self, claim_queries_dict, top_k: int = 5, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given claims
 
         Args:
-            claim_query_dict (dict): a dictionary of claims and their corresponding queries.
+            claim_queries_dict (dict): a dictionary of claims and their corresponding queries.
             top_k (int, optional): the number of top relevant results to retrieve. Defaults to 5.
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
@@ -28,22 +29,24 @@ class SerperEvidenceRetriever:
             dict: a dictionary of claims and their corresponding evidences.
         """
         logger.info("Collecting evidences ...")
-        claim_query_dict_L = list(claim_query_dict.items())
-        query_list = [y for x in claim_query_dict_L for y in x[1]]
+        query_list = [y for x in claim_queries_dict.items() for y in x[1]]
         evidence_list = self._retrieve_evidence_4_all_claim(
             query_list=query_list, top_k=top_k, snippet_extend_flag=snippet_extend_flag
         )
 
         i = 0
         claim_evidence_dict = {}
-        for claim, queries in claim_query_dict_L:
-            claim_evidence_dict[claim] = evidence_list[i : i + len(queries)]
+        for claim, queries in claim_queries_dict.items():
+            evidences_per_query_L = evidence_list[i : i + len(queries)]
+            claim_evidence_dict[claim] = [e for evidences in evidences_per_query_L for e in evidences]
             i += len(queries)
         assert i == len(evidence_list)
         logger.info("Collect evidences done!")
         return claim_evidence_dict
 
-    def _retrieve_evidence_4_all_claim(self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True):
+    def _retrieve_evidence_4_all_claim(
+        self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True
+    ) -> list[list[str]]:
         """Retrieve evidences for the given queries
 
         Args:
@@ -52,13 +55,14 @@ class SerperEvidenceRetriever:
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
         Returns:
-            _type_: _description_
+            list[list[]]: a list of [a list of evidences for each given query].
         """
 
         # init the evidence list with None
-        evidences = [None] * len(query_list)
+        evidences = [[] for _ in query_list]
 
         # get the response from serper
+        # TODO: Can send up to 100 queries once
         serper_response = self._request_serper_api(query_list)
 
         if serper_response is None:
@@ -75,29 +79,33 @@ class SerperEvidenceRetriever:
 
             if "answerBox" in result:
                 if "answer" in result["answerBox"]:
-                    evidences[i] = {
-                        "text": f"{query}\nAnswer: {result['answerBox']['answer']}",
-                        "url": "Google Answer Box",
-                    }
+                    evidences[i] = [
+                        {
+                            "text": f"{query}\nAnswer: {result['answerBox']['answer']}",
+                            "url": "Google Answer Box",
+                        }
+                    ]
                 else:
-                    evidences[i] = {
-                        "text": f"{query}\nAnswer: {result['answerBox']['snippet']}",
-                        "url": "Google Answer Box",
-                    }
+                    evidences[i] = [
+                        {
+                            "text": f"{query}\nAnswer: {result['answerBox']['snippet']}",
+                            "url": "Google Answer Box",
+                        }
+                    ]
+            # TODO: currently --- if there is google answer box, we only got 1 evidence, otherwise, we got multiple, this will deminish the value of the google answer.
             else:
                 results = result.get("organic", [])[:top_k]  # Choose top 5 result
-                merge_evidence_text = [f"Text: {_result['snippet']} \n Source: {_result['link']}" for _result in results]
-                merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
-                evidences[i] = {
-                    "text": "\n\n".join(merge_evidence_text),
-                    "url": "Multiple",
-                }
+
+                if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):
+                    evidences[i] += [
+                        {"text": re.sub(r"\n+", "\n", _result["snippet"]), "url": _result["link"]} for _result in results
+                    ]
 
                 # Save date for each url
                 url_to_date.update({result.get("link"): result.get("date") for result in results})
                 # Save query-url pair, 1 query may have multiple urls
                 query_url_dict.update({query: [result.get("link") for result in results]})
-                _snippet_to_check += [result["snippet"] for result in results]
+                _snippet_to_check += [result["snippet"] if "snippet" in result else "" for result in results]
 
         # return if there is no snippet to check or snippet_extend_flag is False
         if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):
@@ -150,22 +158,19 @@ class SerperEvidenceRetriever:
             )
 
         # merge the snippets by query
-        query_snippet_dict = {}
-        for _query, _snippet in zip(query_to_check, _extended_snippet):
-            _snippet_list = query_snippet_dict.get(_query, [])
-            _snippet_list.append(_snippet)
-            query_snippet_dict[_query] = _snippet_list
+        query_snippet_url_dict = {}
+        for _query, _url, _snippet in zip(query_to_check, url_to_check, _extended_snippet):
+            _snippet_url_list = query_snippet_url_dict.get(_query, [])
+            _snippet_url_list.append((_snippet, _url))
+            query_snippet_url_dict[_query] = _snippet_url_list
 
         # extend the evidence list for each query
-        for _query in query_snippet_dict.keys():
+        for _query in query_snippet_url_dict.keys():
             _query_index = query_list.index(_query)
-            _snippet_list = query_snippet_dict[_query]
-            merge_evidence_text = [f"Text: {snippet} \n Source: {_url}" for snippet, _url in zip(_snippet_list, url_to_check)]
-            merge_evidence_text = [re.sub(r"\n+", "\n", evidence) for evidence in merge_evidence_text]
-            evidences[_query_index] = {
-                "text": "\n\n".join(merge_evidence_text),
-                "url": "Multiple",
-            }
+            _snippet_url_list = query_snippet_url_dict[_query]
+            evidences[_query_index] += [
+                {"text": re.sub(r"\n+", "\n", snippet), "url": _url} for snippet, _url in _snippet_url_list
+            ]
 
         return evidences
 
