@@ -1,6 +1,7 @@
 # Ignore test linting to avoid conflicting changes to version stability.
 exclude: |
     (?x)^(
+      factcheck/utils/prompt/|
       demo_data/|
       templates/|
       static/|
