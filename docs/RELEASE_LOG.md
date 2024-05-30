@@ -1,5 +1,20 @@
 # Release Log
 
+## v0.0.3
+
+### New Features
+1. **Keep Original Text:** Add the mapping from each claim to the position in the original text. Add `restore_claims` function to **decomposer**, to restore the decomposed claims to the original user input.
+2. **Data Structure:** Define the data structure for several intermedia processing function and final output in `utils/data_class.py`.
+3. **Speed Up:** Parallel the `restore_claims`, `identify_checkworthiness` and `query_generation` functions to speed up the pipeline.
+4. **Token Count:** Add the token count for all component.
+5. **Evidence-wise Verification:** Change the verification logic from input all evidence together within a single LLM call, to verify the claim by each evidence for each LLM call.
+6. **Factuality Value:** Remove the deterministic output, change the factuality to a number in range [0,1], calculated by the judgement with each simple evidence.
+7. **Webpage:** Redesign the webpage.
+8. **Default LLM:** Change to GPT-4o.
+
+### Bug fixed
+1. **Serper Max Queries:** Serper API allows max of 100 queries in one request, we split the queries into multiple requests if the number of queries exceeds 100.
+2. **Evidence and URL:** Link each evidence to the corresponding URL.
 
 ## v0.0.2
 

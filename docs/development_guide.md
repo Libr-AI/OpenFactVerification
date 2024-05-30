@@ -1,6 +1,6 @@
 # Development Guide
 
-This documentation page provides a guide for developers to want to contribute to the Loki project, for versions v0.0.2 and later.
+This documentation page provides a guide for developers to want to contribute to the Loki project, for versions v0.0.3 and later.
 
 - [Development Guide](#development-guide)
   - [Framework Introduction](#framework-introduction)
@@ -11,11 +11,11 @@ This documentation page provides a guide for developers to want to contribute to
 
 Loki leverage state-of-the-art language models to verify the veracity of textual claims. The pipeline is designed to be modular in `factcheck/core/`, which include the following components:
 
-- **Decomposer:** Breaks down extensive texts into digestible, independent claims, setting the stage for detailed analysis.
-- **Checkworthy:** Assesses each claim's potential significance, filtering out vague or ambiguous statements to focus on those that truly matter. For example, vague claims like "MBZUAI has a vast campus" are considered unworthy because of the ambiguous nature of "vast."
-- **Query Generator:** Transforms check-worthy claims into precise queries, ready to navigate the vast expanse of the internet in search of truth.
-- **Evidence Retriever:** Ventures into the digital realm, retrieving relevant evidence that forms the foundation of informed verification.
-- **ClaimVerify:** Examines the gathered evidence, determining the veracity of each claim to uphold the integrity of information.
+- **Decomposer:** Breaks down extensive texts into digestible, independent claims, setting the stage for detailed analysis. As well as provide the mapping between the original text and the decomposed claims.
+- **Checkworthy:** Assesses each claim's potential checkworthiness, filtering out vague or ambiguous statements, as well as the statement of opinion. For example, vague claims like "MBZUAI has a vast campus" are considered unworthy because of the ambiguous nature of "vast."
+- **Query Generator:** Transforms check-worthy claims into precise queries, ready to navigate the vast expanse of the internet in search of evidences.
+- **Evidence Retriever:** Retrieve relevant evidence that forms the foundation of informed verification, currently, for open-domain questions, we now use the google search (Serper API).
+- **ClaimVerify:** Judges each evidence against the claim, determining it is supporting, refuting, or irrelevant.
 
 To support each component's functionality, Loki relies on the following utils:
 - **Language Model:** Currently, 4 out of 5 components (including: Decomposer, Checkworthy, Query Generator, and  ClaimVerify) use the language model (LLMs) to perform their tasks. The supported LLMs are defined in `factcheck/core/utils/llmclient/` and can be easily extended to support more LLMs.
@@ -71,7 +71,7 @@ As Loki continues to evolve, our development plan focuses on broadening capabili
 - **Dockerization:**
   - Packaging Loki into Docker containers to simplify deployment and scale-up operations, ensuring Loki can be easily set up and maintained across different environments.
 
-### 5. Multi-language Support
+### 5. Multi-lingual Support
 - **Language Expansion:**
   - Support for additional languages beyond English, including Chinese, Arabic, etc, to cater to a global user base.
 
