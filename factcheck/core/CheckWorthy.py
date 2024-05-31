@@ -25,7 +25,6 @@ class Checkworthy:
             list[str]: a list of checkworthy claims, pairwise outputs
         """
         checkworthy_claims = texts
-        # TODO: better handle checkworthiness
         joint_texts = "\n".join([str(i + 1) + ". " + j for i, j in enumerate(texts)])
 
         if prompt is None:

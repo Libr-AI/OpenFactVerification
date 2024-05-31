@@ -62,50 +62,54 @@ class SerperEvidenceRetriever:
         evidences = [[] for _ in query_list]
 
         # get the response from serper
-        # TODO: Can send up to 100 queries once
-        serper_response = self._request_serper_api(query_list)
+        serper_responses = []
+        for i in range(0, len(query_list), 100):
+            batch_query_list = query_list[i : i + 100]
+            batch_response = self._request_serper_api(batch_query_list)
+            if batch_response is None:
+                logger.error("Serper API request error!")
+                return evidences
+            else:
+                serper_responses += batch_response.json()
 
-        if serper_response is None:
-            logger.error("Serper API request error!")
-            return evidences
-
-        # get the results for queries with an answer box
+        # get the responses for queries with an answer box
         query_url_dict = {}
         url_to_date = {}  # TODO: decide whether to use date
         _snippet_to_check = []
-        for i, (query, result) in enumerate(zip(query_list, serper_response.json())):
-            if query != result.get("searchParameters").get("q"):
-                logger.error("Serper change query from {} TO {}".format(query, result.get("searchParameters").get("q")))
+        for i, (query, response) in enumerate(zip(query_list, serper_responses)):
+            if query != response.get("searchParameters").get("q"):
+                logger.error("Serper change query from {} TO {}".format(query, response.get("searchParameters").get("q")))
 
-            if "answerBox" in result:
-                if "answer" in result["answerBox"]:
+            # TODO: provide the link for the answer box
+            if "answerBox" in response:
+                if "answer" in response["answerBox"]:
                     evidences[i] = [
                         {
-                            "text": f"{query}\nAnswer: {result['answerBox']['answer']}",
+                            "text": f"{query}\nAnswer: {response['answerBox']['answer']}",
                             "url": "Google Answer Box",
                         }
                     ]
                 else:
                     evidences[i] = [
                         {
-                            "text": f"{query}\nAnswer: {result['answerBox']['snippet']}",
+                            "text": f"{query}\nAnswer: {response['answerBox']['snippet']}",
                             "url": "Google Answer Box",
                         }
                     ]
             # TODO: currently --- if there is google answer box, we only got 1 evidence, otherwise, we got multiple, this will deminish the value of the google answer.
             else:
-                results = result.get("organic", [])[:top_k]  # Choose top 5 result
+                topk_results = response.get("organic", [])[:top_k]  # Choose top 5 response
 
                 if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):
                     evidences[i] += [
-                        {"text": re.sub(r"\n+", "\n", _result["snippet"]), "url": _result["link"]} for _result in results
+                        {"text": re.sub(r"\n+", "\n", _result["snippet"]), "url": _result["link"]} for _result in topk_results
                     ]
 
                 # Save date for each url
-                url_to_date.update({result.get("link"): result.get("date") for result in results})
+                url_to_date.update({_result.get("link"): _result.get("date") for _result in topk_results})
                 # Save query-url pair, 1 query may have multiple urls
-                query_url_dict.update({query: [result.get("link") for result in results]})
-                _snippet_to_check += [result["snippet"] if "snippet" in result else "" for result in results]
+                query_url_dict.update({query: [_result.get("link") for _result in topk_results]})
+                _snippet_to_check += [_result["snippet"] if "snippet" in _result else "" for _result in topk_results]
 
         # return if there is no snippet to check or snippet_extend_flag is False
         if (len(_snippet_to_check) == 0) or (not snippet_extend_flag):
