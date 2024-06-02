@@ -17,12 +17,12 @@ class SerperEvidenceRetriever:
         self.serper_key = api_config["SERPER_API_KEY"]
         self.llm_client = llm_client
 
-    def retrieve_evidence(self, claim_queries_dict, top_k: int = 5, snippet_extend_flag: bool = True):
+    def retrieve_evidence(self, claim_queries_dict, top_k: int = 3, snippet_extend_flag: bool = True):
         """Retrieve evidences for the given claims
 
         Args:
             claim_queries_dict (dict): a dictionary of claims and their corresponding queries.
-            top_k (int, optional): the number of top relevant results to retrieve. Defaults to 5.
+            top_k (int, optional): the number of top relevant results to retrieve. Defaults to 3.
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
         Returns:
@@ -45,13 +45,13 @@ class SerperEvidenceRetriever:
         return claim_evidence_dict
 
     def _retrieve_evidence_4_all_claim(
-        self, query_list: list[str], top_k: int = 5, snippet_extend_flag: bool = True
+        self, query_list: list[str], top_k: int = 3, snippet_extend_flag: bool = True
     ) -> list[list[str]]:
         """Retrieve evidences for the given queries
 
         Args:
             query_list (list[str]): a list of queries to retrieve evidences for.
-            top_k (int, optional): the number of top relevant results to retrieve. Defaults to 5.
+            top_k (int, optional): the number of top relevant results to retrieve. Defaults to 3.
             snippet_extend_flag (bool, optional): whether to extend the snippet. Defaults to True.
 
         Returns:

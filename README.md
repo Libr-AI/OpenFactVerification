@@ -48,7 +48,9 @@ export OPENAI_API_KEY=... # this is required in all tasks
 Alternatively, you configure API keys via a YAML file, see [user guide](docs/user_guide.md) for more details.
 
 A sample test case:
-<p align="center"><img src="./assets/cmd_example.gif"/></p>
+<div align="center">
+	<img src="./assets/cmd_example.gif" alt="drawing" width="80%"/>
+</div>
 
 ## Usage
 
@@ -93,12 +95,21 @@ python -m factcheck --modal video --input demo_data/video.m4v
 #### Customize Your Experience
 For advanced usage, please see our [user guide](docs/user_guide.md).
 
-## Ready for More?
+## [Try Our Online Service](https://aip.librai.tech/login)
 
-💪 **Join Our Journey to Innovation with the Supporter Edition**
+<!-- 💪 **Join Our Journey to Innovation with the Supporter Edition** -->
 
 As we continue to evolve and enhance our fact-checking solution, we're excited to invite you to become an integral part of our journey. By registering for our Supporter Edition, you're not just unlocking a suite of advanced features and benefits; you're also fueling the future of trustworthy information.
 
+
+Below is a screenshot of our online service.
+[Click here  to try it now!](https://aip.librai.tech/login)
+
+<div align="center">
+	<img src="./assets/online_screenshot.png" alt="drawing" width="80%"/>
+</div>
+
+<!--
 Your support enables us to:
 
 🚀 Innovate continuously: Develop new, cutting-edge features that keep you ahead in the fight against misinformation.
@@ -109,9 +120,7 @@ Your support enables us to:
 
 🎁 And as a token of our gratitude, registering now grants you **complimentary token credits**—a little thank you from us to you, for believing in our mission and supporting our growth!
 
-
 <div align="center">
-
 
 | Feature                                | Open-Source Edition | Supporter Edition |
 |----------------------------------------|:-------------------:|:------------------:|
@@ -125,13 +134,11 @@ Your support enables us to:
 | Enhanced User Experience               | ❌                   | ✅                  |
 | Faster Efficiency and Higher Accuracy  | ❌                   | ✅                  |
 
-
-</div>
-
-[TRY NOW!](https://aip.librai.tech/login)
+</div> -->
 
 
-### Contributing to Loki project
+
+## Contributing to Loki project
 
 Welcome and thank you for your interest in the Loki project! We welcome contributions and feedback from the community. To get started, please refer to our [Contribution Guidelines](https://github.com/Libr-AI/OpenFactVerification/tree/main/docs/CONTRIBUTING.md).
 
