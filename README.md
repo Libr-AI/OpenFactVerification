@@ -164,13 +164,13 @@ Don’t miss out on the latest updates, feature releases, and community insights
 
 ## Cite as
 ```
-@misc{Loki,
-  author       = {Wang, Hao and Wang, Yuxia and Wang, Minghan and Geng, Yilin and Zhao, Zhen and Zhai, Zenan and Nakov, Preslav and Baldwin, Timothy and Han, Xudong and Li, Haonan},
-  title        = {Loki: An Open-source Tool for Fact Verification},
-  month        = {04},
-  year         = {2024},
-  publisher    = {Zenodo},
-  version      = {v0.0.2},
-  doi          = {10.5281/zenodo.11004461},
-  url          = {https://zenodo.org/records/11004461}
+@misc{li2024lokiopensourcetoolfact,
+      title={Loki: An Open-Source Tool for Fact Verification}, 
+      author={Haonan Li and Xudong Han and Hao Wang and Yuxia Wang and Minghan Wang and Rui Xing and Yilin Geng and Zenan Zhai and Preslav Nakov and Timothy Baldwin},
+      year={2024},
+      eprint={2410.01794},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2410.01794}, 
+}
 ```
